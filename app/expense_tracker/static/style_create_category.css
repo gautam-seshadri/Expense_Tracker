@@ -1,0 +1,238 @@
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Header Styling */
+h1 {
+    text-align: center;
+    color: #4CAF50;
+    margin-top: 50px;
+}
+
+/* Container for Form and Links */
+.container {
+    display: flex;
+    width: 100%;
+    justify-content: center; /* Align the items on the left */
+    padding-left: 0; /* No padding on the left */
+    padding-right: 25%; /* 25% padding on the right */
+    box-sizing: border-box; /* Ensures padding doesn't affect the layout */
+    margin-top: 20px;
+    flex-direction: row; /* Desktop view: Horizontal layout */
+}
+
+.container-view {
+    display: flex;
+    width: 100%;
+    justify-content: center; /* Align the items on the left */
+    padding-left: 0; /* No padding on the left */
+    margin-top: 20px;
+    flex-direction: row; /* Desktop view: Horizontal layout */
+}
+
+/* Left Section - Links */
+.left-section {
+    width: 25%; /* Links section takes 25% of the total width */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 70px; /* Space between links and the form */
+    height: fit-content;
+}
+
+/* Links styling */
+.left-section a {
+    color: #4CAF50;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.left-section a:hover {
+    color: #45a049;
+    text-decoration: underline;
+}
+
+/* Form Styling */
+form {
+    width: 50%; /* Form width is 50% of the container */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    gap: 20px;
+}
+
+/* Form Elements Styling */
+form div {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 8px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Adding margin-top to the category label to create space between it and the item text field */
+label[for="category_desc"] {
+    margin-top: 20px;
+}
+
+input[type="text"], select {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Submit Button Styling */
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+
+/* Table Styling */
+/* Table Styling */
+table {
+    width: 100%; /* Use a width less than 100% to clearly see centering */
+    margin: 0; /* Center the table horizontally */
+    border-collapse: collapse;
+    background-color: #fff;
+}
+
+
+thead th {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 1.1em;
+    padding: 12px;
+    text-align: center;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #e0f7fa;
+}
+
+tbody td {
+    padding: 12px;
+    text-align: center;
+    font-size: 0.95em;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+/* Pagination Styling */
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.pagination a {
+    color: #4CAF50;
+    text-decoration: none;
+    padding: 8px 16px;
+    margin: 0 10px;
+    border: 1px solid #4CAF50;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+.pagination span {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Footer Styling */
+footer {
+    text-align: center;
+    margin-top: 30px;
+}
+
+footer a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-size: 1.1rem;
+    margin-right: 20px;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: #45a049;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    /* Container adjusts for mobile */
+    .container, .container-view {
+        flex-direction: column; /* Stack the form and links vertically */
+        align-items: center;
+    }
+
+    /* Left Section takes full width */
+    .left-section {
+        width: 100%; /* Full width for mobile */
+        margin-bottom: 20px;
+        box-shadow: none; /* Remove shadow for mobile */
+    }
+
+    /* Table adjustments */
+    table {
+        width: 100%; /* Full width for mobile view */
+        font-size: 0.85rem; /* Smaller font size for mobile */
+    }
+
+    th, td {
+        padding: 8px; /* Reduced padding for mobile */
+    }
+
+    /* Pagination styling for mobile */
+    .pagination a {
+        font-size: 0.9rem; /* Adjust font size */
+        padding: 6px 12px; /* Adjust padding */
+        margin: 0 5px; /* Reduced margin */
+    }
+
+    /* Footer Links on Mobile */
+    footer a {
+        font-size: 1rem; /* Adjust font size */
+        margin-right: 15px; /* Reduced margin */
+    }
+}

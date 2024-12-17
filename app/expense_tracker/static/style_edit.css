@@ -1,0 +1,143 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Header Styling */
+h1 {
+    text-align: center;
+    color: #4CAF50;
+    margin: 30px 0;
+}
+
+/* Container Styling */
+.container {
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+    gap: 20px;
+    flex-direction: row; /* Desktop view: side by side */
+}
+
+/* Left Section Styling (Links) */
+.left-section {
+    width: 15%;
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    height: fit-content;
+}
+
+.left-section a {
+    display: block;
+    margin-bottom: 15px;
+    color: #4CAF50;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.3s;
+}
+
+.left-section a:hover {
+    color: #388E3C;
+}
+
+/* Form Table Styling */
+form {
+    width: 70%; /* Form takes 70% width on desktop */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+thead th {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+tbody td {
+    text-align: center;
+    padding: 10px;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #e0f7fa;
+}
+
+/* Input Fields Styling */
+input[type="text"],select, input[type="date"]  {
+    width: 90%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* Button Styling */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+    background-color: #45a049;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Stack the form and links vertically */
+        align-items: center;
+    }
+
+    .left-section, form {
+        width: 100%; /* Full width on mobile */
+        margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+        width: 90%; /* Full width for input fields */
+    }
+
+    /* Adjusting table for mobile */
+    table {
+        font-size: 0.75rem;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+}

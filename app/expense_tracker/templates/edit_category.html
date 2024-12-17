@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_edit_category.css') }}">
+</head>
+<body>
+    <h1>Edit Categories for Expense Tracker</h1>
+    <div class="container">
+        <div class="left-section">
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="{{ url_for('main.edit_expense') }}">Edit Expenses</a>
+            <a href="{{ url_for('main.view_expense') }}">View Expenses</a>
+            <a href="{{ url_for('main.create_category') }}">Create Category</a>
+        </div>
+            <div class="container-view">
+                <form action="/edit_category" method="POST">
+                    <input type="hidden" name="action" id="action" value="U"> <!-- Default action is Update -->
+                    <div>
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <button type="button" id="checkAllBtn">Check All</button>
+                                    </th>
+                                    <th>Category Code</th>
+                                    <th>Category Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category in categories %}
+                                <tr>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            name="selected_ids"
+                                            value="{{ category[0] }}"
+                                            onclick="toggleInputs(this)">
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            id="category_code_{{ category[0] }}"
+                                            name="category_code_{{ category[0] }}"
+                                            value="{{ category[1] }}"
+                                            disabled>
+                                    </td> <!-- category_code -->
+                                    <td>
+                                        <input
+                                            type="text"
+                                            id="category_desc_{{ category[0] }}"
+                                            name="category_desc_{{ category[0] }}"
+                                            value="{{ category[2] }}"
+                                            disabled>
+                                    </td> <!-- category_desc -->
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div>
+                            <button type="submit" data-action="U" onclick="setAction('U')">Update</button>
+                            <button type="submit" data-action="D" onclick="setAction('D')">Delete</button>
+                        </div>
+                    </div>
+                </form>
+            </div> <!-- Closing div added here -->
+
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkboxes = document.querySelectorAll('input[name="selected_ids"]');
+            const checkAllButton = document.getElementById('checkAllBtn');
+
+            // Initialize Check All button state
+            updateCheckAllButton();
+
+            // Toggle input fields when a checkbox is selected/deselected
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('click', () => toggleInputs(checkbox));
+            });
+
+            // Handle Check All/Uncheck All functionality
+            checkAllButton.addEventListener('click', () => {
+                const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = !allChecked;
+                    toggleInputs(checkbox);
+                });
+                updateCheckAllButton();
+            });
+
+            function toggleInputs(checkbox) {
+                const categoryId = checkbox.value;
+                const isChecked = checkbox.checked;
+                document.getElementById(`category_code_${categoryId}`).disabled = !isChecked;
+                document.getElementById(`category_desc_${categoryId}`).disabled = !isChecked;
+            }
+
+            function updateCheckAllButton() {
+                const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+                checkAllButton.textContent = allChecked ? 'Uncheck All' : 'Check All';
+            }
+        });
+
+        function setAction(actionValue) {
+            document.getElementById('action').value = actionValue;
+        }
+    </script>
+</body>
+</html>

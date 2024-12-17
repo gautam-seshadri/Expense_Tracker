@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_create_category.css') }}">
+</head>
+<body>
+<h1>Create categories for Expense tracker</h1>
+<div class="container">
+    <div class="left-section">
+        <a href="{{ url_for('main.index') }}">Home</a>
+        <a href="{{ url_for('main.edit_expense') }}">Edit Expenses</a>
+        <a href="{{ url_for('main.view_expense') }}">View Expenses</a>
+        <a href="{{ url_for('main.edit_category') }}">Edit Category</a>
+    </div>
+    <form action="/create_category" method="POST">
+        <div>
+            <label for="category_code">Category Code:</label>
+            <input type="text" id="category_code" name="category_code" placeholder="Enter your Category code">
+
+            <label for="category_desc">Category Description:</label>
+            <input type="text" id="category_desc" name="category_desc" placeholder="Enter your Category description">
+
+        </div>
+        <input type="submit" value="Save Category">
+    </form>
+</div>
+
+<div class="container-view">
+    <form action="/view_category" method="GET">
+        <div>
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>Category ID</th>
+                    <th>Category code</th>
+                    <th>Category Description</th>
+                    <th>Created Date</th>
+                    <th>Updated Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td>{{ category[0] }}</td> <!-- expense_id -->
+                    <td>{{ category[1] }}</td> <!-- item -->
+                    <td>{{ category[2] }}</td> <!-- category -->
+                    <td>{{ category[3] }}</td> <!-- price -->
+                    <td>{{ category[4] }}</td> <!-- due_paid_ind -->
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>
+
+
+</body>
+</html>

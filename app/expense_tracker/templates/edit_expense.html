@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Expenses</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_edit.css') }}">
+</head>
+<body>
+<h1>Edit Expenses</h1>
+<div class="container">
+    <div class="left-section">
+        <a href="{{ url_for('main.index') }}">Home</a>
+        <a href="{{ url_for('main.view_expense') }}">View Expenses</a>
+        <a href="{{ url_for('main.create_category') }}">Create Category</a>
+        <a href="{{ url_for('main.edit_category') }}">Edit Category</a>
+    </div>
+
+    <form action="/edit_expense" method="POST">
+        <input type="hidden" name="action" id="action" value="U"> <!-- Default action is Update -->
+
+        <table>
+            <thead>
+            <tr>
+                <th>
+                    <button type="button" id="checkAllBtn" onclick="checkAll()">Check All</button>
+                </th>
+                <th>Expense ID</th>
+                <th>Item</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Expense Date (dd/mm/yyyy)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for expense in expenses %}
+            <tr>
+                <td>
+                    <input
+                            type="checkbox"
+                            name="selected_ids"
+                            value="{{ expense[0] }}"
+                            onclick="toggleInputs()">
+                </td>
+                <td>{{ expense[0] }}</td> <!-- Expense ID -->
+                <td>
+                    <input
+                            type="text"
+                            id="item_{{ expense[0] }}"
+                            name="item_{{ expense[0] }}"
+                            value="{{ expense[1] }}"
+                            disabled>
+                </td> <!-- Item -->
+                <td>
+                    <select
+                            id="category_{{ expense[0] }}"
+                            name="category_{{ expense[0] }}">
+                        <option
+                                value="{{ expense[2] }}">
+                            {{ expense[3] }}
+                        </option>
+                        disabled
+                    </select>
+                </td> <!-- Category -->
+                <td>
+                    <input
+                            type="text"
+                            id="price_{{ expense[0] }}"
+                            name="price_{{ expense[0] }}"
+                            value="{{ expense[4] }}"
+                            disabled>
+                </td> <!-- Price -->
+                <td>
+                    <input
+                            type="datetime-local"
+                            id="expense_date_{{ expense[0] }}"
+                            name="expense_date_{{ expense[0] }}"
+                            value="{{ expense[7] }}"
+                            disabled>
+                </td> <!-- Expense Date -->
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div>
+            <button type="submit" onclick="setAction('U', event)">Update</button>
+            <button type="submit" onclick="setAction('D', event)">Delete</button>
+            <p>{{ message }}</p>
+        </div>
+
+
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkboxes = document.querySelectorAll('input[name="selected_ids"]');
+        const checkAllButton = document.getElementById('checkAllBtn');
+
+        // Initialize Check All button state
+        updateCheckAllButton();
+
+        // Add event listener to toggle inputs when a checkbox is selected/deselected
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('click', () => toggleInputs(checkbox));
+        });
+
+        // Handle "Check All/Uncheck All" button functionality
+        checkAllButton.addEventListener('click', () => {
+            const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+                toggleInputs(checkbox);
+            });
+            updateCheckAllButton();
+        });
+
+        function toggleInputs(checkbox) {
+            const expenseId = checkbox.value;
+            const isChecked = checkbox.checked;
+
+            document.getElementById(`item_${expenseId}`).disabled = !isChecked;
+            document.getElementById(`category_${expenseId}`).disabled = !isChecked;
+            document.getElementById(`price_${expenseId}`).disabled = !isChecked;
+            document.getElementById(`expense_date_${expenseId}`).disabled = !isChecked;
+        }
+
+        function updateCheckAllButton() {
+            const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+            checkAllButton.textContent = allChecked ? 'Uncheck All' : 'Check All';
+        }
+    });
+
+    function setAction(actionValue) {
+        const actionField = document.getElementById('action');
+        actionField.value = actionValue;
+    }
+</script>
+</body>
+</html>

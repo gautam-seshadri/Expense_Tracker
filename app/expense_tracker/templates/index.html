@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome to the Expense Tracker!</h1>
+    <div class="container">
+        <div class="left-section">
+            <a href="{{ url_for('main.edit_expense') }}">Edit Expenses</a>
+            <a href="{{ url_for('main.view_expense') }}">View Expenses</a>
+            <a href="{{ url_for('main.create_category') }}">Create Category</a>
+            <a href="{{ url_for('main.edit_category') }}">Edit Category</a>
+        </div>
+        <form action="/index" method="POST">
+            <div>
+                <label for="item">Item:</label>
+                <input type="text" id="item" name="item" placeholder="Enter your items">
+
+                <label for="category">Category:</label>
+                <select id="category" name="category">
+                    {% for category_code in category_codes %}
+                    <option value="{{ category_code[0] }}">{{ category_code[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="price">Price:</label>
+                <input type="text" id="price" name="price" placeholder="Enter the price">
+            </div>
+            <div style="display: flex; marin-top:20px; gap: 20px; align-items: center;">
+                <label>
+                    <input type="radio" name="paid_status" value="P" checked> Paid
+                </label>
+                <label>
+                    <input type="radio" name="paid_status" value="R"> Received
+                </label>
+                <label>
+                    <input type="radio" name="paid_status" value="D"> Due to Pay
+                </label>
+            </div>
+
+            <div>
+              <label for="expense_date">Expense date:</label>
+              <input type="datetime-local" id="expense_date" name="expense_date">
+            </div>
+            <button type="submit" name="button_value" value="S">Save</button>
+            <br>
+            <br>
+            <button type="submit" name="button_value" value="R">Create Reminder</button>
+        </form>
+    </div>
+</body>
+</html>

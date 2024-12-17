@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_login.css') }}">
+    <script>
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById("password");
+            const toggleButton = document.getElementById("togglePassword");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleButton.textContent = "Hide";
+            } else {
+                passwordField.type = "password";
+                toggleButton.textContent = "Show";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Welcome to the Expense Tracker - Login Screen!</h1>
+    <div class="container">
+        <form action="/" method="POST">
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Enter your Username">
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter your Password">
+                <button type="button" id="togglePassword" class="togglePassword" onclick="togglePasswordVisibility()">Show Password</button>
+                <input type="submit" value="Login" class="btn">
+                <a href="{{ url_for('main.register') }}" class="btn">Sign up</a>
+            </div>
+
+            <div>
+                <p>
+                    {{ message }}
+                </p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

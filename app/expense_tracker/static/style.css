@@ -1,0 +1,157 @@
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center everything horizontally */
+    height: 100vh;
+    justify-content: flex-start; /* Align from top */
+}
+
+/* Title Styling */
+h1 {
+    text-align: center;
+    color: #4CAF50;
+    padding-top: 50px;
+    width: 50%;
+    font-size: 2rem; /* Larger font size for desktop */
+}
+
+/* Container for Form and Links */
+.container {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start; /* Align the items on the left */
+    padding-left: 0; /* No padding on the left */
+    padding-right: 25%; /* 25% padding on the right */
+    box-sizing: border-box; /* Ensures padding doesn't affect the layout */
+    margin-top: 20px;
+    flex-direction: row; /* Desktop view: Horizontal layout */
+}
+
+/* Left Section - Links */
+.left-section {
+    width: 25%; /* Links section takes 25% of the total width */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 70px; /* Space between links and the form */
+    height: fit-content;
+}
+
+/* Links styling */
+.left-section a {
+    color: #4CAF50;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.left-section a:hover {
+    color: #45a049;
+    text-decoration: underline;
+}
+
+/* Form Styling */
+form {
+    width: 50%; /* Form width is 50% of the container */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    gap: 20px;
+}
+
+/* Form Elements Styling */
+form div {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Adding margin-top to the category label to create space between it and the item text field */
+label[for="category"] {
+    margin-top: 20px;
+}
+
+input[type="text"], select, input[type="date"], input[type="date"], input[type="datetime-local"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Submit Button Styling */
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+button {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Responsive Design - Mobile View */
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column; /* Stack the form and links vertically */
+        align-items: center; /* Center everything */
+        padding: 0 10%; /* Reduce padding on smaller screens */
+    }
+
+    /* Links section now takes full width */
+    .left-section {
+        width: 100%; /* Full width for links */
+        margin-bottom: 20px; /* Space between links and form */
+    }
+
+    /* Form takes 90% of the container width for better fit */
+    form {
+        width: 90%; /* Form width adjustment */
+        padding: 20px;
+    }
+
+    /* Heading font size for mobile */
+    h1 {
+        font-size: 1.5rem;
+        padding-top: 20px;
+    }
+}

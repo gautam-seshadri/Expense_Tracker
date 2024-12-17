@@ -1,0 +1,261 @@
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Header Styling */
+h1 {
+    text-align: center;
+    color: #4CAF50;
+    margin-top: 50px;
+}
+
+/* Container for left section and table */
+.container {
+    display: flex; /* Enable flexbox layout */
+    width: 70%; /* Adjust width of the container */
+    margin: 0 auto; /* Center the container horizontally */
+    gap: 20px; /* Add space between the left section and the table */
+    align-items: flex-start; /* Align items to the top */
+    margin-top: 50px; /* Add spacing from the header */
+    flex-direction: row; /* Desktop view: side by side */
+    position: relative; /* Ensure child elements can be positioned relative to this container */
+}
+
+.left-section {
+    width: 10%; /* Set the width of the links section */
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    position: absolute; /* Position the element absolutely within the container */
+    top: 50%; /* Move the element down by 50% of the container's height */
+    transform: translateY(-100%); /* Adjust to perfectly center vertically */
+}
+
+
+.left-section a {
+    color: #4CAF50;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    display: block;
+}
+
+.left-section a:hover {
+    color: #45a049;
+    text-decoration: underline;
+}
+
+/* Table Container for Horizontal Scrolling */
+.table-container {
+    overflow-x: auto; /* Allow horizontal scrolling */
+    width: 75%; /* Adjust width of the table */
+    margin-top: 20px; /* Add some space above the table */
+}
+
+/* Table Styling */
+table {
+    width: 70%; /* Full width of the table */
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    min-width: 900px; /* Ensure the table has enough width for all columns */
+    table-layout: fixed; /* Ensures fixed column widths */
+}
+
+thead th {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 1.1em;
+    padding: 12px;
+    text-align: center;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #e0f7fa;
+}
+
+tbody td {
+    padding: 12px;
+    text-align: center;
+    font-size: 0.95em;
+    word-wrap: break-word; /* Prevent overflow and allow wrapping of text */
+}
+
+/* Set explicit width for the first column (Expense ID) */
+thead th:first-child, tbody td:first-child {
+    width: 150px; /* Increase width of Expense ID column */
+    text-align: left; /* Align text to the left for better readability */
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+/* Pagination Styling */
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.pagination a {
+    color: #4CAF50;
+    text-decoration: none;
+    padding: 8px 16px;
+    margin: 0 10px;
+    border: 1px solid #4CAF50;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+.pagination span {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Footer Styling */
+footer {
+    text-align: center;
+    margin-top: 30px;
+}
+
+footer a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-size: 1.1rem;
+    margin-right: 20px;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: #45a049;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Stack the form and links vertically */
+        align-items: center;
+    }
+
+    .left-section, table {
+        width: 100%; /* Full width for mobile view */
+        margin-bottom: 20px;
+    }
+
+    .left-section {
+        box-shadow: none; /* Remove shadow for mobile */
+    }
+
+    /* Table adjustments */
+    table {
+        font-size: 0.85rem; /* Smaller font size for mobile */
+    }
+
+    th, td {
+        padding: 8px; /* Reduced padding for mobile */
+    }
+
+    /* Pagination styling for mobile */
+    .pagination a {
+        font-size: 0.9rem; /* Adjust font size */
+        padding: 6px 12px; /* Adjust padding */
+        margin: 0 5px; /* Reduced margin */
+    }
+
+    /* Footer Links on Mobile */
+    footer a {
+        font-size: 1rem; /* Adjust font size */
+        margin-right: 15px; /* Reduced margin */
+    }
+
+    /* Ensure Table scrolls horizontally */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 800px; /* Allow table to scale down on mobile */
+    }
+}
+
+
+
+    .total-expense {
+        position: absolute;
+        right: 20px; /* Keep it near the bottom-right */
+        bottom: -40px; /* Adjust this to move it lower */
+        background: #f9f9f9; /* Optional: Add a subtle background for emphasis */
+        padding: 5px 10px; /* Optional: Add padding for better visuals */
+        border: 1px solid #ccc; /* Optional: Add a border */
+        border-radius: 5px; /* Optional: Rounded corners */
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .container {
+        position: relative; /* Ensures .total-expense is positioned relative to this container */
+    }
+
+    /* Container styling */
+.container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column; /* Ensure it's laid out vertically */
+}
+
+/* Search container styling */
+.search-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px; /* Space between search form and the table */
+    align-items: center;
+}
+
+/* Search input field styling */
+.search-container input[type="text"],
+.search-container input[type="date"] {
+    padding: 5px;
+    font-size: 1em;
+    width: 300px;
+}
+
+/* Button Styling for Search */
+.search-container button {
+    padding: 5px 10px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px; /* Add space above the table */
+}
+
+/* Table header and cells */
+table th, table td {
+    padding: 10px;
+    text-align: left;
+}
+
+

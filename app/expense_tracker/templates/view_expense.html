@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Expenses</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_view.css') }}">
+
+</head>
+<body>
+<h1>View Expense Details!</h1>
+<!-- Navigation Links -->
+<div class="left-section">
+    <a href="{{ url_for('main.index') }}">Home</a>
+    <a href="{{ url_for('main.edit_expense') }}">Edit Expenses</a>
+    <a href="{{ url_for('main.create_category') }}">Create Category</a>
+    <a href="{{ url_for('main.edit_category') }}">Edit Category</a>
+</div>
+<div class="container">
+    <!-- Search and Filter Form -->
+<form method="GET" action="/view_expense" class="search-container">
+    <!-- Date Range Inputs -->
+    <input
+        type="date"
+        name="from_expense_date_search"
+        value="{{ request.args.get('from_expense_date_search', '') }}">
+
+    <input
+        type="date"
+        name="to_expense_date_search"
+        value="{{ request.args.get('to_expense_date_search', '') }}">
+
+    <!-- Radio Button Group -->
+    <div class="radio-group">
+        <label>
+            <input type="radio" name="due_paid_ind_search" value="A"
+                   {{ 'checked' if request.args.get('due_paid_ind_search', 'A') == 'A' else '' }}>
+            All
+        </label>
+        <label>
+            <input type="radio" name="due_paid_ind_search" value="P"
+                   {{ 'checked' if request.args.get('due_paid_ind_search') == 'P' else '' }}>
+            Paid
+        </label>
+        <label>
+            <input type="radio" name="due_paid_ind_search" value="R"
+                   {{ 'checked' if request.args.get('due_paid_ind_search') == 'R' else '' }}>
+            Received
+        </label>
+        <label>
+            <input type="radio" name="due_paid_ind_search" value="D"
+                   {{ 'checked' if request.args.get('due_paid_ind_search') == 'D' else '' }}>
+            Due to Pay
+        </label>
+    </div>
+
+    <!-- Submit Button -->
+    <div>
+        <button type="submit">Search</button>
+        <button type="submit" name="export_param" value="E">Export to Excel</button>
+        <p>
+            {{ message }}
+        </p>
+    </div>
+</form>
+
+
+
+    <!-- Expenses Table -->
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Expense ID</th>
+            <th>Item</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Due/Paid</th>
+            <th>Expense Date</th>
+            <th>Updated Date (24 Hour Format)</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for expense in expenses %}
+        <tr>
+            <td>{{ expense[0] }}</td> <!-- expense_id -->
+            <td>{{ expense[1] }}</td> <!-- item -->
+            <td>
+                <select>
+                    <option value="{{ expense[2] }}">
+                        {{ expense[3] }}
+                    </option>
+                </select>
+            </td> <!-- category -->
+            <td class="price">{{ expense[4] }}</td> <!-- price -->
+            <td>{{ expense[5] }}</td> <!-- due_paid_ind -->
+            <td>{{ expense[7] }}</td> <!-- expense_date -->
+            <td>{{ expense[6] }}</td> <!-- updated_date -->
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Total Expense Amount -->
+    <div class="total-expense">
+        Total Expense Amount: <span id="totalExpense">{{ sum_expense }}</span>
+    </div>
+    <br>
+    <br>
+    <br>
+
+</div>
+
+<!-- Pagination Links -->
+<footer>
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('main.view_expense', page=page-1) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ page }} of {{ total_pages }}</span>
+        {% if page < total_pages %}
+        <a href="{{ url_for('main.view_expense', page=page+1) }}">Next</a>
+        {% endif %}
+    </div>
+</footer>
+</body>
+</html>

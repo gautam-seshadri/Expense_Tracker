@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_login.css') }}">
+</head>
+<body>
+    <h1>Welcome to the Expense Tracker - Login Screen!</h1>
+    <div class="container">
+        <form action="/register" method="POST">
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Enter your Username">
+
+                <label for="password">Password:</label>
+                <input type="text" id="password" name="password" placeholder="Enter your Password">
+
+                <label for="password2">Confirm Password:</label>
+                <input type="text" id="password2" name="password2" placeholder="Confirm Password">
+
+            </div>
+            <div>
+            <input type="submit" value="Register">
+            </div>
+
+            <div>
+                <p>
+                    {{ message }}
+                </p>
+            </div>
+
+        </form>
+    </div>
+</body>
+</html>
