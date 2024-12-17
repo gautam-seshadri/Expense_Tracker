@@ -9,8 +9,8 @@ import pandas as pd
 # Create a blueprint
 main = Blueprint('main', __name__)
 
-TODOIST_API_URL      = 'https://api.todoist.com/rest/v2/tasks'
-TODOIST_API_TOKEN    = 'b0fc1460b2a4f9c4cef8f1b2811452f240c28314'
+TODOIST_API_URL         = 'https://api.todoist.com/rest/v2/tasks'
+TODOIST_API_TOKEN       = 'b0fc1460b2a4f9c4cef8f1b2811452f240c28314'
 
 
 @main.route('/', methods=['GET', 'POST'])
