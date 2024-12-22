@@ -1,6 +1,6 @@
 import oracledb
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for
-from app.expense_tracker.connection import get_db_connection
+from Expense_Tracker.app.expense_tracker.connection import get_db_connection
 import re
 from todoist_api_python.api import TodoistAPI
 from datetime import datetime
@@ -79,9 +79,36 @@ def register():
         print("Error in Login " + str(e))
     return render_template('register.html', message=out_message)
 
+@main.route('/update_password', methods=['GET', 'POST'])
+def update_password(username):
+    out_message = ""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        if request.method == 'POST':
+            password = request.form['password']
+            password2 = request.form['password2']
 
-# Initialize the Todoist API client
-api = TodoistAPI(TODOIST_API_TOKEN)
+            if password == password2:
+                update_password_query="""
+                update et_user_login
+                set password=:password
+                where username=:username;
+                """
+                cursor.execute(update_password_query, {'username': username, 'password': password})
+                conn.commit()
+                cursor.close()
+                conn.close()
+                out_message = f"The Password {password} has been updated successfully!"
+                return render_template('update_password.html', message=out_message)
+            elif password != password2:
+                out_message = "Both the entered passwords are not identical. Please check!"
+                return render_template('update_password.html', message=out_message)
+    except Exception as e:
+        print("Error in Login " + str(e))
+    return render_template('update_password.html', message=out_message)
+
+
 
 
 @main.route('/index', methods=['GET', 'POST'])
