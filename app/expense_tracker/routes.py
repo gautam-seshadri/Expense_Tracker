@@ -79,7 +79,7 @@ def register():
         print("Error in Login " + str(e))
     return render_template('register.html', message=out_message)
 
-@main.route('/update_password', methods=['GET', 'POST'])
+@main.route('/update_password/<username>', methods=['GET', 'POST'])
 def update_password(username):
     out_message = ""
     try:
