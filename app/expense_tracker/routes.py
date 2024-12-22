@@ -100,10 +100,10 @@ def update_password(username):
                 cursor.close()
                 conn.close()
                 out_message = f"The Password {password} has been updated successfully!"
-                return render_template('update_password.html', message=out_message)
+                return render_template('login.html', message=out_message)
             elif password != password2:
                 out_message = "Both the entered passwords are not identical. Please check!"
-                return render_template('update_password.html', message=out_message)
+                return render_template('login.html', message=out_message)
     except Exception as e:
         print("Error in Login " + str(e))
     return render_template('update_password.html', message=out_message,username=username)
