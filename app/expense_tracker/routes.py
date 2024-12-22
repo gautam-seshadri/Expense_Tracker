@@ -106,7 +106,7 @@ def update_password(username):
                 return render_template('update_password.html', message=out_message)
     except Exception as e:
         print("Error in Login " + str(e))
-    return render_template('update_password.html', message=out_message)
+    return render_template('update_password.html', message=out_message,username=username)
 
 
 
