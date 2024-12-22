@@ -1,5 +1,5 @@
 import oracledb
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from Expense_Tracker.app.expense_tracker.connection import get_db_connection
 import re
 from todoist_api_python.api import TodoistAPI
@@ -82,6 +82,7 @@ def register():
 @main.route('/update_password/<username>', methods=['GET', 'POST'])
 def update_password(username):
     out_message = ""
+    print(f'Username is this: {username}')
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -100,13 +101,14 @@ def update_password(username):
                 cursor.close()
                 conn.close()
                 out_message = f"The Password {password} has been updated successfully!"
-                return render_template('login.html', message=out_message)
+                return redirect(url_for('main.login'))
             elif password != password2:
                 out_message = "Both the entered passwords are not identical. Please check!"
-                return render_template('login.html', message=out_message)
+                flash("Passwords do not match. Please try again.", "error")
+        return render_template('update_password.html', message=out_message,username=username)
     except Exception as e:
         print("Error in Login " + str(e))
-    return render_template('update_password.html', message=out_message,username=username)
+
 
 
 
