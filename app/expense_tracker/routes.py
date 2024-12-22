@@ -15,8 +15,8 @@ TODOIST_API_TOKEN       = 'b0fc1460b2a4f9c4cef8f1b2811452f240c28314'
 
 @main.route('/', methods=['GET', 'POST'])
 def login():
-    out_message = ""
-    status = ""
+    out_message     = ""
+    status     = ""
     message = ""
     try:
         conn = get_db_connection()
