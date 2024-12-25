@@ -197,10 +197,23 @@ footer a:hover {
 
 
 
-    .total-expense {
+    .page-expense {
         position: absolute;
         right: 20px; /* Keep it near the bottom-right */
-        bottom: -40px; /* Adjust this to move it lower */
+        bottom: -1px; /* Adjust this to move it lower */
+        background: #f9f9f9; /* Optional: Add a subtle background for emphasis */
+        padding: 5px 10px; /* Optional: Add padding for better visuals */
+        border: 1px solid #ccc; /* Optional: Add a border */
+        border-radius: 5px; /* Optional: Rounded corners */
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+    }
+
+        .total-expense {
+        position: absolute;
+        right: 20px; /* Keep it near the bottom-right */
+        bottom: -60px; /* Adjust this to move it lower */
         background: #f9f9f9; /* Optional: Add a subtle background for emphasis */
         padding: 5px 10px; /* Optional: Add padding for better visuals */
         border: 1px solid #ccc; /* Optional: Add a border */

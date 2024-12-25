@@ -17,12 +17,39 @@
                 toggleButton.textContent = "Show";
             }
         }
+
+
+    // Capture the click event on the "Change Password" link
+    document.getElementById('changePasswordLink').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default action (link click)
+
+        // Get the username value from the input field
+        var username = document.getElementById('username').value;
+
+        // Check if the username is not empty
+        if (username) {
+            // Update the link's href with the username value
+            var url = '/update_password/' + username; // Your route URL with username
+            window.location.href = url; // Redirect to the update password page
+        } else {
+            alert('Please enter a username!');
+        }
+    });
+
+    function updateAction() {
+        // Get the username entered in the form
+        const username = document.getElementById('username').value;
+
+        // Update the 'Change Password' link dynamically
+        const changePasswordLink = document.getElementById('changePasswordLink');
+        changePasswordLink.href = `{{ url_for('main.update_password', username='') }}` + username;
+    }
     </script>
 </head>
 <body>
     <h1>Welcome to the Expense Tracker - Login Screen!</h1>
     <div class="container">
-        <form action="/" method="POST">
+        <form id="loginform" method="POST">
             <div>
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" placeholder="Enter your Username">
@@ -32,7 +59,9 @@
                 <button type="button" id="togglePassword" class="togglePassword" onclick="togglePasswordVisibility()">Show Password</button>
                 <input type="submit" value="Login" class="btn">
                 <a href="{{ url_for('main.register') }}" class="btn">Sign up</a>
-                <a href="{{ url_for('main.update_password',username=username) }}" class="btn">Change Password</a>
+                <a href="{{ url_for('main.update_password', username=username) }}" id="changePasswordLink" class="btn" onclick="updateAction()">Change Password</a>
+
+
             </div>
 
             <div>

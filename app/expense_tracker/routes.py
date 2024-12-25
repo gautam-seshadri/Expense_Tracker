@@ -1,5 +1,5 @@
 import oracledb
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for
 from Expense_Tracker.app.expense_tracker.connection import get_db_connection
 import re
 from todoist_api_python.api import TodoistAPI
@@ -9,26 +9,28 @@ import pandas as pd
 # Create a blueprint
 main = Blueprint('main', __name__)
 
-TODOIST_API_URL         = 'https://api.todoist.com/rest/v2/tasks'
-TODOIST_API_TOKEN       = 'b0fc1460b2a4f9c4cef8f1b2811452f240c28314'
+TODOIST_API_URL = 'https://api.todoist.com/rest/v2/tasks'
+TODOIST_API_TOKEN = 'b0fc1460b2a4f9c4cef8f1b2811452f240c28314'
+
+api = TodoistAPI(TODOIST_API_TOKEN)
 
 
 @main.route('/', methods=['GET', 'POST'])
 def login():
-    out_message     = ""
-    status     = ""
+    print('Test Login 1')
     message = ""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        # username = request.form.get('username', None)  # Default to None if not set
+        # password = None  # Initialize message
 
         if request.method == 'POST':
+            username = request.form['username']
+            password = request.form['password']
 
             out_message = cursor.var(oracledb.STRING)
             status = cursor.var(oracledb.STRING)
-
-            username = request.form['username']
-            password = request.form['password']
             cursor.callproc('user_login_sp', [out_message, status, username, password])
             cursor.close()
             conn.close()
@@ -36,7 +38,7 @@ def login():
             status_value = status.getvalue()
             if status_value == 'N':
                 message = out_message_value
-                return render_template('login.html', message=message)
+                return render_template('login.html', message=message, username=username)
             else:
                 return redirect(url_for('main.index'))  # Redirect to the /index endpoint
     except Exception as e:
@@ -79,6 +81,7 @@ def register():
         print("Error in Login " + str(e))
     return render_template('register.html', message=out_message)
 
+
 @main.route('/update_password/<username>', methods=['GET', 'POST'])
 def update_password(username):
     out_message = ""
@@ -91,32 +94,29 @@ def update_password(username):
             password2 = request.form['password2']
 
             if password == password2:
-                update_password_query="""
+                update_password_query = """
                 update et_user_login
-                set password=:password
-                where username=:username;
+                set passwd=:password
+                where user_name=:username
                 """
                 cursor.execute(update_password_query, {'username': username, 'password': password})
                 conn.commit()
                 cursor.close()
                 conn.close()
-                out_message = f"The Password {password} has been updated successfully!"
-                return redirect(url_for('main.login'))
+                out_message = f"The Password for Username {username} has been updated successfully!"
             elif password != password2:
                 out_message = "Both the entered passwords are not identical. Please check!"
-                flash("Passwords do not match. Please try again.", "error")
-        return render_template('update_password.html', message=out_message,username=username)
+            return render_template('login.html', message=out_message, username=username)
+        return render_template('update_password.html', message=out_message, username=username)
+
     except Exception as e:
         print("Error in Login " + str(e))
-
-
-
+    return render_template('update_password.html')
 
 
 @main.route('/index', methods=['GET', 'POST'])
 def index():
     try:
-        print('@1-index')
         conn = get_db_connection()
         cursor = conn.cursor()
         # Fetch category codes for both GET and POST requests
@@ -127,7 +127,6 @@ def index():
         """
         cursor.execute(category_query)
         category_codes = cursor.fetchall()
-        print('@2')
         print(request.method)
         if request.method == 'POST':
             # Get form data
@@ -137,7 +136,6 @@ def index():
             expense_date = request.form['expense_date']
             paid_status = request.form['paid_status']
             reminder_status = request.form.get('button_value')
-
 
             if len(expense_date) == 16:  # 'YYYY-MM-DDTHH:MM' format
                 expense_date += ':00'
@@ -153,15 +151,16 @@ def index():
                 )
             """
             cursor.execute(insert_query,
-                           {'item': item, 'category': category, 'price': price, 'paid_status': paid_status, 'expense_date': expense_date})
+                           {'item': item, 'category': category, 'price': price, 'paid_status': paid_status,
+                            'expense_date': expense_date})
             conn.commit()
 
             # Success message
             success_message = f"Save the details for {item} for the price {price} ."
             cursor.close()
             conn.close()
-            print('the value will be: '+reminder_status)
-            if reminder_status =='R':
+            print('the value will be: ' + reminder_status)
+            if reminder_status == 'R':
                 print('the value will be R')
                 create_todoist_task(item, category, price, expense_date)
             return render_template('success.html', success_message=success_message)
@@ -182,14 +181,11 @@ def index():
         return render_template('success.html', success_message="An error occurred while processing your request.")
 
 
-
-
 def create_todoist_task(item, category, price, expense_date):
     try:
 
-
         expense_date_str = str(expense_date)
-            # If it's a single string, parse and format it
+        # If it's a single string, parse and format it
         date_str = datetime.strptime(expense_date_str, "%Y-%m-%d %H:%M:%S")
         due_date = date_str.strftime("%Y-%m-%dT%H:%M:%S")  # Keep it in local time
         # Create the task in Todoist
@@ -197,7 +193,7 @@ def create_todoist_task(item, category, price, expense_date):
             content=f"Payment for {item} ({category}) - ₹{price}",
             due_string=due_date,  # You can use due_string for a simple due date
             priority=4,  # Priority level (1-4)
-            )
+        )
 
         # Success message
         print(task)
@@ -207,17 +203,12 @@ def create_todoist_task(item, category, price, expense_date):
         print(f"Failed to create task for {item}: {error}")
 
 
-
-
-
-
-@main.route('/view_expense', methods=['GET','POST'])
+@main.route('/view_expense', methods=['GET', 'POST'])
 def view_expense():
     page = request.args.get('page', default=1, type=int)  # Get the page number from the URL, default to 1
     records_per_page = 10  # Number of records per page
     offset = (page - 1) * records_per_page  # Calculate the offset
-    export_param=""
-    message=""
+    message = ""
     try:
 
         conn = get_db_connection()
@@ -229,32 +220,40 @@ def view_expense():
         # Fetch search parameters
         from_expense_date_search = request.args.get('from_expense_date_search', None)
         to_expense_date_search = request.args.get('to_expense_date_search', None)
-        due_paid_ind_search = request.args.get('due_paid_ind_search',  None)  # Default to 'A' (All)
-        export_param = request.args.get('export_param',None)
+        due_paid_ind_search = request.args.get('due_paid_ind_search', None)  # Default to 'A' (All)
+        export_param = request.args.get('export_param', None)
         print(records_per_page, offset)
         print("the value of dpi is")
-        print(from_expense_date_search,to_expense_date_search)
-
-        params = {}
+        print(from_expense_date_search, to_expense_date_search)
 
         # Define the query
-        query = """      
+        query = """  
+         with cte_total_sum as
+            (
+            select sum(price) total_sum
+            from expense_tracker et_sum
+            where (:from_expense_date_search IS NULL OR et_sum.expense_date >= to_date(:from_expense_date_search,'yyyy-mm-dd'))
+                  AND (:to_expense_date_search IS NULL OR et_sum.expense_date <= to_date(:to_expense_date_search,'yyyy-mm-dd'))
+                  AND (:due_paid_ind_search IS NULL OR et_sum.due_paid_ind = :due_paid_ind_search)
+            ) 
             SELECT expense_id, item, category_code, category, price, due_paid_ind, 
                    TO_CHAR(updated_date, 'dd-Mon-yyyy HH24:MI:SS') updated_date, 
-                   TO_CHAR(expense_date, 'dd-Mon-yyyy hh24:mi:ss') expense_date
+                   TO_CHAR(expense_date, 'dd-Mon-yyyy hh24:mi:ss') expense_date,
+                   total_sum
             FROM (
                 SELECT et.expense_id, et.item, cm.category_code, cm.category_desc category, et.price,
                        DECODE(et.due_paid_ind, 'D', 'Due to Pay', 'P', 'Paid', 'R', 'Received', ' ') due_paid_ind,
                        et.updated_date,
-                       ROW_NUMBER() OVER (ORDER BY et.updated_date DESC) AS rn, et.expense_date
-                FROM expense_tracker et, category_mst cm
+                       ROW_NUMBER() OVER (ORDER BY et.updated_date DESC) AS rn, et.expense_date,
+                       cts.total_sum
+                FROM expense_tracker et, category_mst cm, cte_total_sum cts
                 WHERE et.category = cm.category_code
                 AND  (:from_expense_date_search IS NULL OR expense_date >= to_date(:from_expense_date_search,'yyyy-mm-dd'))
                   AND (:to_expense_date_search IS NULL OR expense_date <= to_date(:to_expense_date_search,'yyyy-mm-dd'))
                   AND (:due_paid_ind_search IS NULL OR et.due_paid_ind = :due_paid_ind_search)
             )
             WHERE rn BETWEEN :offset + 1 AND :offset + :limit
-            group by expense_id, item, category_code, category, price, due_paid_ind, updated_date, expense_date
+            group by expense_id, item, category_code, category, price, due_paid_ind, updated_date, expense_date, total_sum
             ORDER by expense_id desc
         """
 
@@ -279,6 +278,7 @@ def view_expense():
         }
 
         # Execute the query
+        expenses = []
         try:
             cursor.execute(query, params)
             expenses = cursor.fetchall()
@@ -288,21 +288,21 @@ def view_expense():
 
         if expenses:
             sum_expense = sum(row[4] for row in expenses)
+            total_sum = sum({row[8] for row in expenses})
         else:
             sum_expense = 0
+            total_sum = 0
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        print("the value of export_param")
-        print(export_param)
         if export_param == 'E':
             df = pd.read_sql(query, con=conn, params=params)
 
             # Add the total sum row to the DataFrame
             blank_row = pd.DataFrame([['', '', '', '', '', '', '', '']], columns=df.columns)
             total_row = pd.DataFrame([['', '', 'Total Sum (Price):', '', sum_expense, '', '', '']], columns=df.columns)
-            df = pd.concat([df,blank_row,blank_row, total_row], ignore_index=True)
+            df = pd.concat([df, blank_row, blank_row, total_row], ignore_index=True)
             output_file = f'expenses_{timestamp}.xlsx'
             df.to_excel(output_file, index=False)
-            message=f"Data successfully exported to {output_file}"
+            message = f"Data successfully exported to {output_file}"
 
         cursor.close()
         conn.close()
@@ -312,12 +312,11 @@ def view_expense():
             page=page,
             total_pages=total_pages,
             sum_expense=sum_expense,
-            message=message
+            message=message,
+            total_sum=total_sum
         )
     except Exception as e:
         return f"Error fetching expenses: {str(e)}"
-
-
 
 
 @main.route('/edit_expense', methods=['GET', 'POST'])
@@ -456,7 +455,6 @@ def edit_category():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        categories = []
 
         if request.method == 'POST':
 
@@ -482,7 +480,8 @@ def edit_category():
                          updated_date = sysdate
                     where category_id =:category_id
                     """
-                    cursor.execute(update_cat_query, {'category_id': category_id, 'category_code': category_code, 'category_desc': category_desc})
+                    cursor.execute(update_cat_query, {'category_id': category_id, 'category_code': category_code,
+                                                      'category_desc': category_desc})
 
             elif action == 'D':
                 delete_category_query = """
@@ -508,7 +507,7 @@ def edit_category():
                     'id_list': selected_ids,
                     'num_ids': len(selected_ids)
                 })
-                success_message = "Deleted the requested records successfully!!"
+                # success_message = "Deleted the requested records successfully!!"
             conn.commit()
             view_cat_query = """
                                select category_id, category_code, category_desc     
@@ -535,7 +534,3 @@ def edit_category():
         return render_template('edit_category.html', categories=categories)
     except Exception as e:
         return jsonify({"error": str(e)})
-
-
-
-
