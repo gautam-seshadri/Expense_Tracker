@@ -14,6 +14,15 @@ h1 {
     margin-top: 50px;
 }
 
+#category_search{
+    width: 20%;
+    padding: 10px;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
 /* Container for left section and table */
 .container {
     display: flex; /* Enable flexbox layout */

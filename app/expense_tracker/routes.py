@@ -17,7 +17,6 @@ api = TodoistAPI(TODOIST_API_TOKEN)
 
 @main.route('/', methods=['GET', 'POST'])
 def login():
-    print('Test Login 1')
     message = ""
     try:
         conn = get_db_connection()
@@ -127,7 +126,6 @@ def index():
         """
         cursor.execute(category_query)
         category_codes = cursor.fetchall()
-        print(request.method)
         if request.method == 'POST':
             # Get form data
             item = request.form['item']
@@ -159,9 +157,7 @@ def index():
             success_message = f"Save the details for {item} for the price {price} ."
             cursor.close()
             conn.close()
-            print('the value will be: ' + reminder_status)
             if reminder_status == 'R':
-                print('the value will be R')
                 create_todoist_task(item, category, price, expense_date)
             return render_template('success.html', success_message=success_message)
 
@@ -196,7 +192,6 @@ def create_todoist_task(item, category, price, expense_date):
         )
 
         # Success message
-        print(task)
 
     except Exception as error:
         # Error handling
@@ -214,17 +209,26 @@ def view_expense():
         conn = get_db_connection()
         cursor = conn.cursor()
 
+
+        # Fetch category codes for both GET and POST requests
+        category_query = """
+            SELECT category_code, category_desc
+            FROM category_mst
+            ORDER BY category_id
+        """
+        cursor.execute(category_query)
+        category_codes = cursor.fetchall()
+
         cursor.execute("SELECT COUNT(*) FROM expense_tracker")
         total_records = cursor.fetchone()[0]
         total_pages = (total_records + records_per_page - 1) // records_per_page  # Calculate total pages
         # Fetch search parameters
         from_expense_date_search = request.args.get('from_expense_date_search', None)
         to_expense_date_search = request.args.get('to_expense_date_search', None)
+        category_search = request.args.get('category_search', None)
         due_paid_ind_search = request.args.get('due_paid_ind_search', None)  # Default to 'A' (All)
         export_param = request.args.get('export_param', None)
-        print(records_per_page, offset)
-        print("the value of dpi is")
-        print(from_expense_date_search, to_expense_date_search)
+
 
         # Define the query
         query = """  
@@ -235,6 +239,7 @@ def view_expense():
             where (:from_expense_date_search IS NULL OR et_sum.expense_date >= to_date(:from_expense_date_search,'yyyy-mm-dd'))
                   AND (:to_expense_date_search IS NULL OR et_sum.expense_date <= to_date(:to_expense_date_search,'yyyy-mm-dd'))
                   AND (:due_paid_ind_search IS NULL OR et_sum.due_paid_ind = :due_paid_ind_search)
+                  AND (:category_search is NULL or et_sum.category = :category_search)
             ) 
             SELECT expense_id, item, category_code, category, price, due_paid_ind, 
                    TO_CHAR(updated_date, 'dd-Mon-yyyy HH24:MI:SS') updated_date, 
@@ -251,6 +256,7 @@ def view_expense():
                 AND  (:from_expense_date_search IS NULL OR expense_date >= to_date(:from_expense_date_search,'yyyy-mm-dd'))
                   AND (:to_expense_date_search IS NULL OR expense_date <= to_date(:to_expense_date_search,'yyyy-mm-dd'))
                   AND (:due_paid_ind_search IS NULL OR et.due_paid_ind = :due_paid_ind_search)
+                  AND (:category_search is NULL or et.category = :category_search)
             )
             WHERE rn BETWEEN :offset + 1 AND :offset + :limit
             group by expense_id, item, category_code, category, price, due_paid_ind, updated_date, expense_date, total_sum
@@ -265,6 +271,9 @@ def view_expense():
         if not to_expense_date_search:
             to_expense_date_search = None
 
+        if not category_search:
+            category_search = None
+
         if due_paid_ind_search == 'A' or not due_paid_ind_search:
             due_paid_ind_search = None
 
@@ -272,6 +281,7 @@ def view_expense():
         params = {
             'from_expense_date_search': from_expense_date_search,
             'to_expense_date_search': to_expense_date_search,
+            'category_search': category_search,
             'due_paid_ind_search': due_paid_ind_search,
             'offset': offset,
             'limit': records_per_page
@@ -279,6 +289,7 @@ def view_expense():
 
         # Execute the query
         expenses = []
+        sum_expense=0
         try:
             cursor.execute(query, params)
             expenses = cursor.fetchall()
@@ -297,8 +308,8 @@ def view_expense():
             df = pd.read_sql(query, con=conn, params=params)
 
             # Add the total sum row to the DataFrame
-            blank_row = pd.DataFrame([['', '', '', '', '', '', '', '']], columns=df.columns)
-            total_row = pd.DataFrame([['', '', 'Total Sum (Price):', '', sum_expense, '', '', '']], columns=df.columns)
+            blank_row = pd.DataFrame([['', '', '', '', '', '', '', '','']], columns=df.columns)
+            total_row = pd.DataFrame([['', '', 'Total Sum (Price):', '', sum_expense, '', '', '', '']], columns=df.columns)
             df = pd.concat([df, blank_row, blank_row, total_row], ignore_index=True)
             output_file = f'expenses_{timestamp}.xlsx'
             df.to_excel(output_file, index=False)
@@ -313,10 +324,16 @@ def view_expense():
             total_pages=total_pages,
             sum_expense=sum_expense,
             message=message,
-            total_sum=total_sum
+            total_sum=total_sum,
+            category_codes=category_codes,
+            category_search=category_search
         )
     except Exception as e:
-        return f"Error fetching expenses: {str(e)}"
+        return f"Error fetching expenses final: {str(e)}"
+
+
+
+
 
 
 @main.route('/edit_expense', methods=['GET', 'POST'])
@@ -333,7 +350,6 @@ def edit_expense():
             action = request.form['action']
             selected_ids = list(map(int, selected_ids))
             # Iterate and update each selected expense
-            print("the value for action in edit expense is: " + action)
             success_message = []
             if action == 'U':
                 for expense_id in selected_ids:
@@ -346,7 +362,6 @@ def edit_expense():
                         expense_date += ':00'
 
                     expense_date = datetime.strptime(expense_date, '%Y-%m-%dT%H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
-                    print(expense_date)
                     update_query = """
                     UPDATE expense_tracker
                     SET item = :item, category = :category, price = :price, updated_date = SYSDATE, expense_date = to_date(:expense_date, 'yyyy-mm-dd hh24:mi:ss')
@@ -464,7 +479,7 @@ def edit_category():
                 return jsonify({"error": "No category selected for update."})
 
             action = request.form['action']
-            print("the actions in edit_category: " + action)
+
 
             selected_ids = list(map(int, selected_ids))
             if action == 'U':

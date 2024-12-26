@@ -8,7 +8,7 @@
 
 </head>
 <body>
-<h1>View Expense Details!</h1>
+<h1>View Expense Details</h1>
 <!-- Navigation Links -->
 <div class="left-section">
     <a href="{{ url_for('main.index') }}">Home</a>
@@ -29,6 +29,16 @@
         type="date"
         name="to_expense_date_search"
         value="{{ request.args.get('to_expense_date_search', '') }}">
+
+<select id="category_search" name="category_search">
+    {% for category_code in category_codes %}
+        <option value="{{ category_code[0] }}"
+                {% if category_code[0] == request.args.get('category_search') %}selected{% endif %}>
+            {{ category_code[1] }}
+        </option>
+    {% endfor %}
+</select>
+
 
     <!-- Radio Button Group -->
     <div class="radio-group">
@@ -75,7 +85,7 @@
             <th>Category</th>
             <th>Price</th>
             <th>Due/Paid</th>
-            <th>Expense Date</th>
+            <th>Expense Date (24 Hour Format)</th>
             <th>Updated Date (24 Hour Format)</th>
         </tr>
         </thead>
@@ -84,13 +94,7 @@
         <tr>
             <td>{{ expense[0] }}</td> <!-- expense_id -->
             <td>{{ expense[1] }}</td> <!-- item -->
-            <td>
-                <select>
-                    <option value="{{ expense[2] }}">
-                        {{ expense[3] }}
-                    </option>
-                </select>
-            </td> <!-- category -->
+            <td>{{ expense[3] }}</td> <!-- category -->
             <td class="price">{{ expense[4] }}</td> <!-- price -->
             <td>{{ expense[5] }}</td> <!-- due_paid_ind -->
             <td>{{ expense[7] }}</td> <!-- expense_date -->
@@ -124,7 +128,7 @@
         {% endif %}
         <span>Page {{ page }} of {{ total_pages }}</span>
         {% if page < total_pages %}
-        <a href="{{ url_for('main.view_expense', page=page+1) }}">Next</a>
+        <a href="{{ url_for('main.view_expense', page=page+1, category_search=request.args.get('category_search')) }}">Next</a>
         {% endif %}
     </div>
 </footer>
