@@ -289,7 +289,6 @@ def view_expense():
 
         # Execute the query
         expenses = []
-        sum_expense=0
         try:
             cursor.execute(query, params)
             expenses = cursor.fetchall()
