@@ -15,65 +15,122 @@
     <a href="{{ url_for('main.edit_expense') }}">Edit Expenses</a>
     <a href="{{ url_for('main.create_category') }}">Create Category</a>
     <a href="{{ url_for('main.edit_category') }}">Edit Category</a>
+    <a href="{{ url_for('main.logout') }}">Logout</a>
 </div>
 <div class="container">
     <!-- Search and Filter Form -->
-<form method="GET" action="/view_expense" class="search-container">
-    <!-- Date Range Inputs -->
-    <input
-        type="date"
-        name="from_expense_date_search"
-        value="{{ request.args.get('from_expense_date_search', '') }}">
+    <form method="GET" action="/view_expense" class="search-container">
+        <!-- Date Range Inputs -->
+        <input
+                type="date"
+                name="from_expense_date_search"
+                value="{{ request.args.get('from_expense_date_search', '') }}">
 
-    <input
-        type="date"
-        name="to_expense_date_search"
-        value="{{ request.args.get('to_expense_date_search', '') }}">
+        <input
+                type="date"
+                name="to_expense_date_search"
+                value="{{ request.args.get('to_expense_date_search', '') }}">
 
-<select id="category_search" name="category_search">
-    {% for category_code in category_codes %}
-        <option value="{{ category_code[0] }}"
-                {% if category_code[0] == request.args.get('category_search') %}selected{% endif %}>
+        <select id="category_search" name="category_search">
+            {% for category_code in category_codes %}
+            <option value="{{ category_code[0] }}"
+                    {% if category_code[0]== request.args.get(
+            'category_search') %}selected{% endif %}>
             {{ category_code[1] }}
-        </option>
-    {% endfor %}
-</select>
+            </option>
+            {% endfor %}
+        </select>
 
 
-    <!-- Radio Button Group -->
-    <div class="radio-group">
-        <label>
-            <input type="radio" name="due_paid_ind_search" value="A"
-                   {{ 'checked' if request.args.get('due_paid_ind_search', 'A') == 'A' else '' }}>
-            All
-        </label>
-        <label>
-            <input type="radio" name="due_paid_ind_search" value="P"
-                   {{ 'checked' if request.args.get('due_paid_ind_search') == 'P' else '' }}>
-            Paid
-        </label>
-        <label>
-            <input type="radio" name="due_paid_ind_search" value="R"
-                   {{ 'checked' if request.args.get('due_paid_ind_search') == 'R' else '' }}>
-            Received
-        </label>
-        <label>
-            <input type="radio" name="due_paid_ind_search" value="D"
-                   {{ 'checked' if request.args.get('due_paid_ind_search') == 'D' else '' }}>
-            Due to Pay
-        </label>
-    </div>
+        <!-- Radio Button Group -->
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="due_paid_ind_search" value="A"
+                       {{ 'checked' if request.args.get('due_paid_ind_search', 'A') == 'A' else '' }}>
+                All
+            </label>
+            <label>
+                <input type="radio" name="due_paid_ind_search" value="P"
+                       {{ 'checked' if request.args.get('due_paid_ind_search') == 'P' else '' }}>
+                Paid
+            </label>
+            <label>
+                <input type="radio" name="due_paid_ind_search" value="R"
+                       {{ 'checked' if request.args.get('due_paid_ind_search') == 'R' else '' }}>
+                Received
+            </label>
+            <label>
+                <input type="radio" name="due_paid_ind_search" value="D"
+                       {{ 'checked' if request.args.get('due_paid_ind_search') == 'D' else '' }}>
+                Due to Pay
+            </label>
+        </div>
 
-    <!-- Submit Button -->
-    <div>
-        <button type="submit">Search</button>
-        <button type="submit" name="export_param" value="E">Export to Excel</button>
-        <p>
-            {{ message }}
-        </p>
-    </div>
-</form>
+        <!-- Submit Button -->
+        <div>
+            <button type="submit">Search</button>
+            <button type="submit" name="export_param" value="E">Export to Excel</button>
 
+            <p>
+                {{ message }}
+            </p>
+        </div>
+
+
+        <div class="sort_container">
+            <label for="sort_query"> Sort By: </label>
+            <select id="sort_query" name="sort_query">
+                <option value="expense_id"
+                        {% if
+                "expense_id"== request.args.get(
+                'sort_query') %}selected{% endif %}>
+                Expense Id
+                </option>
+                <option value="item"
+                        {% if
+                "item"== request.args.get(
+                'sort_query') %}selected{% endif %}>
+                Item
+                </option>
+
+                <option value="price"
+                        {% if
+                "price"== request.args.get(
+                'sort_query') %}selected{% endif %}>
+                Price
+                </option>
+                <option value="due_paid"
+                        {% if
+                "due_paid"== request.args.get(
+                'sort_query') %}selected{% endif %}>
+                Due Paid
+                </option>
+                <option value="expense_date"
+                        {% if
+                "expense_date"== request.args.get(
+                'sort_query') %}selected{% endif %}>
+                Expense Date
+                </option>
+            </select>
+
+<!--            <label for="asc_des"> Ascending/Descending: </label>-->
+            <select id="asc_des" name="asc_des">
+                <option value="desc"
+                        {% if
+                "desc"== request.args.get(
+                'asc_des') %}selected{% endif %}>
+                Descending
+                </option>
+                <option value="asc"
+                        {% if
+                "asc"== request.args.get(
+                'asc_des') %}selected{% endif %}>
+                Ascending
+                </option>
+
+            </select>
+        </div>
+    </form>
 
 
     <!-- Expenses Table -->

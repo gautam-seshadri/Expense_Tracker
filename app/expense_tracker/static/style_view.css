@@ -23,6 +23,8 @@ h1 {
     box-sizing: border-box;
 }
 
+
+
 /* Container for left section and table */
 .container {
     display: flex; /* Enable flexbox layout */
@@ -35,6 +37,8 @@ h1 {
     position: relative; /* Ensure child elements can be positioned relative to this container */
 }
 
+
+
 .left-section {
     width: 10%; /* Set the width of the links section */
     box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
@@ -45,7 +49,6 @@ h1 {
     top: 50%; /* Move the element down by 50% of the container's height */
     transform: translateY(-100%); /* Adjust to perfectly center vertically */
 }
-
 
 .left-section a {
     color: #4CAF50;
@@ -204,39 +207,37 @@ footer a:hover {
     }
 }
 
+.page-expense {
+    position: absolute;
+    right: 20px; /* Keep it near the bottom-right */
+    bottom: -1px; /* Adjust this to move it lower */
+    background: #f9f9f9; /* Optional: Add a subtle background for emphasis */
+    padding: 5px 10px; /* Optional: Add padding for better visuals */
+    border: 1px solid #ccc; /* Optional: Add a border */
+    border-radius: 5px; /* Optional: Rounded corners */
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
 
+.total-expense {
+    position: absolute;
+    right: 20px; /* Keep it near the bottom-right */
+    bottom: -60px; /* Adjust this to move it lower */
+    background: #f9f9f9; /* Optional: Add a subtle background for emphasis */
+    padding: 5px 10px; /* Optional: Add padding for better visuals */
+    border: 1px solid #ccc; /* Optional: Add a border */
+    border-radius: 5px; /* Optional: Rounded corners */
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
 
-    .page-expense {
-        position: absolute;
-        right: 20px; /* Keep it near the bottom-right */
-        bottom: -1px; /* Adjust this to move it lower */
-        background: #f9f9f9; /* Optional: Add a subtle background for emphasis */
-        padding: 5px 10px; /* Optional: Add padding for better visuals */
-        border: 1px solid #ccc; /* Optional: Add a border */
-        border-radius: 5px; /* Optional: Rounded corners */
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #333;
-    }
+.container {
+    position: relative; /* Ensures .total-expense is positioned relative to this container */
+}
 
-        .total-expense {
-        position: absolute;
-        right: 20px; /* Keep it near the bottom-right */
-        bottom: -60px; /* Adjust this to move it lower */
-        background: #f9f9f9; /* Optional: Add a subtle background for emphasis */
-        padding: 5px 10px; /* Optional: Add padding for better visuals */
-        border: 1px solid #ccc; /* Optional: Add a border */
-        border-radius: 5px; /* Optional: Rounded corners */
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .container {
-        position: relative; /* Ensures .total-expense is positioned relative to this container */
-    }
-
-    /* Container styling */
+/* Container styling */
 .container {
     padding: 20px;
     display: flex;
@@ -250,6 +251,8 @@ footer a:hover {
     gap: 10px;
     margin-bottom: 20px; /* Space between search form and the table */
     align-items: center;
+    justify-content: space-between; /* Distribute space between items */
+
 }
 
 /* Search input field styling */
@@ -281,3 +284,37 @@ table th, table td {
 }
 
 
+/* Container for sort options */
+.sort_container {
+    display: flex;
+    position: absolute;
+    top: 30px;
+    flex-direction: column;
+    align-items: flex-end;  /* Aligns items to the left */
+    width: auto;  /* Increased width to ensure visibility */
+    margin-top: 35px;  /* Adjust margin as needed */
+    margin-left: 85%;
+}
+
+/* Label styling */
+.sort_container label {
+    display: flex;
+    float: left;
+    flex-direction: column;
+    margin-top: 1px;  /* Adjust margin as needed *//**//**/
+    font-size: 0.75rem;
+}
+
+
+
+/* Styling for the sort query and asc/desc select elements */
+#sort_query, #asc_des {
+    width: 100px;  /* Full width of the container */
+    width: 150px;  /* Full width of the container */
+    padding: 10px;
+    font-size: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-bottom: 10px;  /* Adds space between the elements */
+    display: inline-block;
+}

@@ -1,5 +1,5 @@
 import oracledb
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash
 from Expense_Tracker.app.expense_tracker.connection import get_db_connection
 import re
 from todoist_api_python.api import TodoistAPI
@@ -19,6 +19,9 @@ api = TodoistAPI(TODOIST_API_TOKEN)
 def login():
     message = ""
     try:
+        if 'username' in session:
+            return redirect(url_for('main.index'))
+
         conn = get_db_connection()
         cursor = conn.cursor()
         # username = request.form.get('username', None)  # Default to None if not set
@@ -39,10 +42,22 @@ def login():
                 message = out_message_value
                 return render_template('login.html', message=message, username=username)
             else:
+                session.permanent = True
+                session['username'] = username
                 return redirect(url_for('main.index'))  # Redirect to the /index endpoint
     except Exception as e:
         print("Error in Login " + str(e))
     return render_template('login.html', message=message)
+
+
+
+
+@main.route('/logout', methods=['GET', 'POST'])
+def logout():
+    message = ""
+    session.pop('username', None)
+    flash("You've been successfully logged out!")
+    return redirect(url_for('main.login',message=message))
 
 
 @main.route('/register', methods=['GET', 'POST'])
@@ -200,6 +215,7 @@ def create_todoist_task(item, category, price, expense_date):
 
 @main.route('/view_expense', methods=['GET', 'POST'])
 def view_expense():
+    print("start g1")
     page = request.args.get('page', default=1, type=int)  # Get the page number from the URL, default to 1
     records_per_page = 10  # Number of records per page
     offset = (page - 1) * records_per_page  # Calculate the offset
@@ -212,55 +228,64 @@ def view_expense():
 
         # Fetch category codes for both GET and POST requests
         category_query = """
-            SELECT category_code, category_desc
+            
+            (SELECT category_code, category_desc
             FROM category_mst
-            ORDER BY category_id
+            union all
+            SELECT 'A' , 'All' 
+            FROM dual)
+            ORDER BY category_code
         """
         cursor.execute(category_query)
         category_codes = cursor.fetchall()
 
-        cursor.execute("SELECT COUNT(*) FROM expense_tracker")
-        total_records = cursor.fetchone()[0]
-        total_pages = (total_records + records_per_page - 1) // records_per_page  # Calculate total pages
+        # cursor.execute("SELECT COUNT(*) FROM expense_tracker")
+        # total_records = cursor.fetchone()[0]
         # Fetch search parameters
         from_expense_date_search = request.args.get('from_expense_date_search', None)
         to_expense_date_search = request.args.get('to_expense_date_search', None)
-        category_search = request.args.get('category_search', None)
+        category_search = request.args.get('category_search', 'A')
         due_paid_ind_search = request.args.get('due_paid_ind_search', None)  # Default to 'A' (All)
+        sort_query_by = request.args.get('sort_query', 'expense_id')
+        asc_des = request.args.get('asc_des','desc')
+        order_by_clause = f"ORDER BY {sort_query_by} {asc_des}"
         export_param = request.args.get('export_param', None)
 
 
         # Define the query
-        query = """  
+        query = f"""  
          with cte_total_sum as
             (
-            select sum(price) total_sum
+            select sum(price) total_sum, count(*) total_cnt
             from expense_tracker et_sum
             where (:from_expense_date_search IS NULL OR et_sum.expense_date >= to_date(:from_expense_date_search,'yyyy-mm-dd'))
                   AND (:to_expense_date_search IS NULL OR et_sum.expense_date <= to_date(:to_expense_date_search,'yyyy-mm-dd'))
                   AND (:due_paid_ind_search IS NULL OR et_sum.due_paid_ind = :due_paid_ind_search)
-                  AND (:category_search is NULL or et_sum.category = :category_search)
+                  AND (:category_search is NULL or :category_search = 'A' or et_sum.category = :category_search)
             ) 
             SELECT expense_id, item, category_code, category, price, due_paid_ind, 
                    TO_CHAR(updated_date, 'dd-Mon-yyyy HH24:MI:SS') updated_date, 
                    TO_CHAR(expense_date, 'dd-Mon-yyyy hh24:mi:ss') expense_date,
-                   total_sum
+                   total_sum,
+                   total_cnt
             FROM (
                 SELECT et.expense_id, et.item, cm.category_code, cm.category_desc category, et.price,
                        DECODE(et.due_paid_ind, 'D', 'Due to Pay', 'P', 'Paid', 'R', 'Received', ' ') due_paid_ind,
                        et.updated_date,
                        ROW_NUMBER() OVER (ORDER BY et.updated_date DESC) AS rn, et.expense_date,
-                       cts.total_sum
+                       cts.total_sum,
+                       cts.total_cnt
                 FROM expense_tracker et, category_mst cm, cte_total_sum cts
                 WHERE et.category = cm.category_code
                 AND  (:from_expense_date_search IS NULL OR expense_date >= to_date(:from_expense_date_search,'yyyy-mm-dd'))
                   AND (:to_expense_date_search IS NULL OR expense_date <= to_date(:to_expense_date_search,'yyyy-mm-dd'))
                   AND (:due_paid_ind_search IS NULL OR et.due_paid_ind = :due_paid_ind_search)
-                  AND (:category_search is NULL or et.category = :category_search)
+                  AND (:category_search is NULL or :category_search = 'A' or et.category = :category_search)
             )
             WHERE rn BETWEEN :offset + 1 AND :offset + :limit
-            group by expense_id, item, category_code, category, price, due_paid_ind, updated_date, expense_date, total_sum
-            ORDER by expense_id desc
+            group by expense_id, item, category_code, category, price, due_paid_ind, updated_date, expense_date, 
+                   total_sum,total_cnt
+            {order_by_clause}
         """
 
         # Add optional filters
@@ -272,10 +297,16 @@ def view_expense():
             to_expense_date_search = None
 
         if not category_search:
-            category_search = None
+            category_search = "All"
 
         if due_paid_ind_search == 'A' or not due_paid_ind_search:
             due_paid_ind_search = None
+
+        if not sort_query_by:
+            sort_query_by = "expense_id"
+
+        if not asc_des:
+            asc_des = "desc"
 
         # Define parameters
         params = {
@@ -299,9 +330,12 @@ def view_expense():
         if expenses:
             sum_expense = sum(row[4] for row in expenses)
             total_sum = sum({row[8] for row in expenses})
+            total_cnt = sum({row[9] for row in expenses})
         else:
             sum_expense = 0
             total_sum = 0
+            total_cnt=0
+
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         if export_param == 'E':
             df = pd.read_sql(query, con=conn, params=params)
@@ -314,6 +348,7 @@ def view_expense():
             df.to_excel(output_file, index=False)
             message = f"Data successfully exported to {output_file}"
 
+        total_pages = (total_cnt + records_per_page - 1) // records_per_page  # Calculate total pages
         cursor.close()
         conn.close()
         return render_template(
