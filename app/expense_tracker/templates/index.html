@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 <body>
 <h1>Welcome to the Expense Tracker!</h1>
@@ -32,7 +33,7 @@
             <label for="price">Price:</label>
             <input type="text" id="price" name="price" placeholder="Enter the price">
         </div>
-        <div style="display: flex; marin-top:20px; gap: 20px; align-items: center;">
+        <div style="display: flex; margin-top:20px; gap: 20px; align-items: center;">
             <label>
                 <input type="radio" name="paid_status" value="P" checked> Paid
             </label>
@@ -41,6 +42,16 @@
             </label>
             <label>
                 <input type="radio" name="paid_status" value="D"> Due to Pay
+            </label>
+
+        </div>
+
+        <div style="display: flex; margin-top:20px; gap: 20px; align-items: center;">
+            <label>
+                <input type="radio" name="one_recur" value="O" checked> One-time
+            </label>
+            <label>
+                <input type="radio" name="one_recur" value="R"> Recurring
             </label>
         </div>
 
@@ -53,6 +64,36 @@
         <br>
         <button type="submit" name="button_value" value="R">Create Reminder</button>
     </form>
+
+    <!-- Gradient Circle Section -->
+    <div id="monthlylimit" class="monthlylimit">
+        <div id="circle" class="circle green">In Track</div>
+    </div>
+
 </div>
+
+<script>
+    function updateStatus() {
+const monthlyLimit = 20000; // Monthly limit in ₹
+const expenseInput = {{ monthly_res | tojson }};
+const circle = document.getElementById("circle");
+
+// Parse input and update the current expense
+const currentExpense = parseFloat(expenseInput) || 0; // Default to 0 if input is invalid
+// Update the circle's status based on the expense
+if (currentExpense <= monthlyLimit * 0.7) {
+    circle.className = "circle green";
+    circle.textContent = "In Track";
+} else if (currentExpense <= monthlyLimit) {
+    circle.className = "circle orange";
+    circle.textContent = "Warning";
+} else {
+    circle.className = "circle red";
+    circle.textContent = "Over Limit";
+}
+}
+window.onload = updateStatus;
+
+</script>
 </body>
 </html>

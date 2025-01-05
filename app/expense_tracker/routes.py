@@ -141,6 +141,20 @@ def index():
         """
         cursor.execute(category_query)
         category_codes = cursor.fetchall()
+
+        try:
+            monthly_limitq = """
+                select sum(price)
+                from expense_tracker
+                where expense_date between trunc(sysdate,'month') and add_months(trunc(sysdate,'month'),1)-1
+            """
+            cursor.execute(monthly_limitq)
+            monthly_res = cursor.fetchall()
+        except:
+            return f"Error found while computing Monthly Sum"
+
+
+
         if request.method == 'POST':
             # Get form data
             item = request.form['item']
@@ -149,6 +163,7 @@ def index():
             expense_date = request.form['expense_date']
             paid_status = request.form['paid_status']
             reminder_status = request.form.get('button_value')
+            one_recur = request.form['one_recur']
 
             if len(expense_date) == 16:  # 'YYYY-MM-DDTHH:MM' format
                 expense_date += ':00'
@@ -157,19 +172,20 @@ def index():
             # Insert data into the database
             insert_query = """
                 INSERT INTO expense_tracker (
-                    expense_id, item, category, price, due_paid_ind, created_date, updated_date, expense_date
+                    expense_id, item, category, price, due_paid_ind, created_date, updated_date, expense_date, payment_type
                 ) VALUES (
                     expense_tracker_exp_id_seq.NEXTVAL, :item, :category, :price, :paid_status,
-                    SYSDATE + (330 / 1440), SYSDATE + (330 / 1440), to_date(:expense_date,'yyyy-mm-dd hh24:mi:ss')
+                    SYSDATE + (330 / 1440), SYSDATE + (330 / 1440), to_date(:expense_date,'yyyy-mm-dd hh24:mi:ss', :one_recur)
                 )
             """
             cursor.execute(insert_query,
                            {'item': item, 'category': category, 'price': price, 'paid_status': paid_status,
-                            'expense_date': expense_date})
+                            'expense_date': expense_date, 'one_recur': one_recur})
             conn.commit()
 
+
             # Success message
-            success_message = f"Save the details for {item} for the price {price} ."
+            success_message = f"Saved the details for {item} for the price {price} ."
             cursor.close()
             conn.close()
             if reminder_status == 'R':
@@ -184,12 +200,18 @@ def index():
         return render_template(
             'index.html',
             title='Expense Tracker',
-            category_codes=category_codes
+            category_codes=category_codes,
+            monthly_res=monthly_res
         )
 
     except Exception as e:
         print(f"Error encountered: {str(e)}")
         return render_template('success.html', success_message="An error occurred while processing your request.")
+
+
+
+
+
 
 
 def create_todoist_task(item, category, price, expense_date):
@@ -583,3 +605,12 @@ def edit_category():
         return render_template('edit_category.html', categories=categories)
     except Exception as e:
         return jsonify({"error": str(e)})
+
+
+
+
+
+
+
+
+

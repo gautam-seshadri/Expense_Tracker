@@ -155,3 +155,60 @@ input[type="submit"]:hover {
         padding-top: 20px;
     }
 }
+
+
+    .monthlylimit {
+        text-align: center;
+        font-family: Arial, sans-serif;
+        margin-top: -150px;
+        position: relative;
+        margin-left : 100px;
+    }
+
+    .circle {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        line-height: 100px;
+        border-radius: 50%;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        text-align: center;
+        margin: 20px auto;
+    }
+
+    .green {
+        background: linear-gradient(to bottom right, #4caf50, #81c784); /* Green gradient */
+    }
+
+    .orange {
+        background: linear-gradient(to bottom right, #ff9800, #ffc107); /* Orange gradient */
+    }
+
+    .red {
+        background: linear-gradient(to bottom right, #f44336, #e57373); /* Red gradient */
+    }
+
+    input[type="number"] {
+        padding: 10px;
+        margin: 10px 0;
+        width: 50%;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #45a047;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a058;
+    }
+
+
