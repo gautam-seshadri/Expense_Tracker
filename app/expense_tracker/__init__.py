@@ -2,8 +2,8 @@ from flask import Flask
 from datetime import timedelta
 '''
 1. Saving goals and tracking it
-2. Recurring expenses
-3. Monthly exepnses limit and whether reached, reaching it or in track.
+2. Recurring expenses -Done
+3. Monthly exepnses limit and whether reached, reaching it or in track. - Done
 4. Expense insights
 
 '''

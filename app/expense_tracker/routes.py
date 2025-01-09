@@ -175,7 +175,7 @@ def index():
                     expense_id, item, category, price, due_paid_ind, created_date, updated_date, expense_date, payment_type
                 ) VALUES (
                     expense_tracker_exp_id_seq.NEXTVAL, :item, :category, :price, :paid_status,
-                    SYSDATE + (330 / 1440), SYSDATE + (330 / 1440), to_date(:expense_date,'yyyy-mm-dd hh24:mi:ss', :one_recur)
+                    SYSDATE + (330 / 1440), SYSDATE + (330 / 1440), to_date(:expense_date,'yyyy-mm-dd hh24:mi:ss'), :one_recur
                 )
             """
             cursor.execute(insert_query,
@@ -350,7 +350,7 @@ def view_expense():
             print(f"Error fetching expenses: {e}")
 
         if expenses:
-            sum_expense = sum(row[4] for row in expenses)
+            sum_expense = int(sum(row[4] for row in expenses))
             total_sum = sum({row[8] for row in expenses})
             total_cnt = sum({row[9] for row in expenses})
         else:
@@ -363,8 +363,8 @@ def view_expense():
             df = pd.read_sql(query, con=conn, params=params)
 
             # Add the total sum row to the DataFrame
-            blank_row = pd.DataFrame([['', '', '', '', '', '', '', '','']], columns=df.columns)
-            total_row = pd.DataFrame([['', '', 'Total Sum (Price):', '', sum_expense, '', '', '', '']], columns=df.columns)
+            blank_row = pd.DataFrame([['', '', '', '', '', '', '', '','','']], columns=df.columns)
+            total_row = pd.DataFrame([['', '', 'Total Sum (Price):', '', sum_expense, '', '', '', '','']], columns=df.columns)
             df = pd.concat([df, blank_row, blank_row, total_row], ignore_index=True)
             output_file = f'expenses_{timestamp}.xlsx'
             df.to_excel(output_file, index=False)
@@ -605,6 +605,19 @@ def edit_category():
         return render_template('edit_category.html', categories=categories)
     except Exception as e:
         return jsonify({"error": str(e)})
+
+
+
+#
+# @main.route('/insights', methods=['GET'])
+# def insights():
+#     try:
+#         data = {
+#             category:
+#         }
+#     except Exception as e:
+#         print(str(e))
+
 
 
 
