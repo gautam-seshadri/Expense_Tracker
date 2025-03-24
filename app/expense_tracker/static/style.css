@@ -156,59 +156,172 @@ input[type="submit"]:hover {
     }
 }
 
+.monthlylimit {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin-top: -150px;
+    position: relative;
+    margin-left: 100px;
+}
 
-    .monthlylimit {
-        text-align: center;
-        font-family: Arial, sans-serif;
-        margin-top: -150px;
-        position: relative;
-        margin-left : 100px;
+.circle {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin: 20px auto;
+}
+
+.green {
+    background: linear-gradient(to bottom right, #4caf50, #81c784); /* Green gradient */
+}
+
+.orange {
+    background: linear-gradient(to bottom right, #ff9800, #ffc107); /* Orange gradient */
+}
+
+.red {
+    background: linear-gradient(to bottom right, #f44336, #e57373); /* Red gradient */
+}
+
+input[type="number"] {
+    padding: 10px;
+    margin: 10px 0;
+    width: 50%;
+    font-size: 16px;
+}
+
+/* Table Styling - UPDATED */
+table {
+    width: 80%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    table-layout: fixed; /* Added for consistent column widths */
+}
+
+/* Table Headers */
+th {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px;
+    text-align: center; /* Changed to center */
+    font-size: 1rem;
+    vertical-align: middle;
+}
+
+/* Table Rows */
+td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 1rem;
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* Alternating Row Colors */
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Column Widths */
+table th:first-child,
+table td:first-child {  /* Select column */
+    width: 5%;
+}
+
+table th:nth-child(2),
+table td:nth-child(2) { /* Meal Type column */
+    width: 15%;
+}
+
+table th:nth-child(3),
+table td:nth-child(3) { /* Food Name column */
+    width: 20%;
+}
+
+table th:nth-child(4),
+table td:nth-child(4) { /* Calories column */
+    width: 10%;
+}
+
+table th:nth-child(5),
+table td:nth-child(5) { /* Quantity column */
+    width: 10%;
+}
+
+table th:nth-child(6),
+table td:nth-child(6) { /* Unit column */
+    width: 15%;
+}
+
+table th:nth-child(7),
+table td:nth-child(7) { /* Actions column */
+    width: 25%;
+    white-space: nowrap;
+}
+
+/* Buttons inside table cells */
+table td button {
+    width: auto; /* Prevent stretching */
+    padding: 8px 12px; /* Smaller padding */
+    margin-right: 5px; /* Space between buttons */
+    display: inline-block;
+    font-size: 0.9rem; /* Smaller font */
+}
+
+/* Forms inside table cells */
+table td form {
+    display: inline-block; /* Keep Modify & Delete side by side */
+    margin: 0; /* Remove unwanted margins */
+    width: auto;
+    padding: 0;
+    box-shadow: none;
+    background-color: transparent;
+}
+
+/* Button style for table actions */
+.btn {
+    display: inline-block;
+    width: 80px;
+    margin: 0;
+    padding: 6px 12px;
+}
+
+/* Responsive Design for Table */
+@media (max-width: 600px) {
+    table {
+        width: 100%;
     }
 
-    .circle {
-        display: inline-block;
-        width: 100px;
-        height: 100px;
-        line-height: 100px;
-        border-radius: 50%;
-        font-size: 16px;
-        font-weight: bold;
-        color: white;
-        text-align: center;
-        margin: 20px auto;
-    }
-
-    .green {
-        background: linear-gradient(to bottom right, #4caf50, #81c784); /* Green gradient */
-    }
-
-    .orange {
-        background: linear-gradient(to bottom right, #ff9800, #ffc107); /* Orange gradient */
-    }
-
-    .red {
-        background: linear-gradient(to bottom right, #f44336, #e57373); /* Red gradient */
-    }
-
-    input[type="number"] {
+    th, td {
+        font-size: 0.9rem;
         padding: 10px;
-        margin: 10px 0;
-        width: 50%;
-        font-size: 16px;
     }
 
-    button {
-        padding: 10px 20px;
-        font-size: 16px;
-        color: white;
-        background-color: #45a047;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+    /* Adjust column widths for mobile */
+    table th, table td {
+        width: auto !important;
     }
+}
 
-    button:hover {
-        background-color: #45a058;
-    }
+/* Remove styles tag inside the CSS file */
+select, input[type="text"] {
+    padding: 5px;
+}
 
-
+table td button {
+    padding: 5px 10px;
+}

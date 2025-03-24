@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Item Calorie Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Food Item Calorie Tracker</h1>
+
+    <div class="container">
+        <!-- Left Section for Quick Links -->
+        <div class="left-section">
+            <a href="{{ url_for('fb_main.fb_home') }}">Home</a>
+            <a href="#">Add Food</a>
+            <a href="#">View Stats</a>
+            <a href="#">Logout</a>
+        </div>
+
+        <!-- Form to Add Food Items -->
+        <form id="food-form" method="POST">
+            <div>
+                <input type="hidden" id="check-food-click" name="check-food-click" value="0">  <!-- Hidden field -->
+                <button type="submit" id="check-food" name="check-food" onclick="document.getElementById('check-food-click').value = '1'">
+                    Check food
+                </button>
+            </div>
+
+            <div>
+                <label for="food-name">Food</label>
+                <input type="text" id="food-name" name="food-name"
+                       placeholder="e.g., Dosa" list="food-suggestions" required value="{{ food_name }}" onchange="this.form.submit()" oninput="fetchSuggestions(this.value)">
+
+                <datalist id="food-suggestions">
+                    {% for food in suggestions %}
+                        <option value="{{ food }}">
+                    {% endfor %}
+                </datalist>
+            </div>
+            <div>
+                {% with messages = get_flashed_messages(category_filter=["error_top"]) %}
+                  {% if messages %}
+                    <ul class="flashes">
+                    {% for message in messages %}
+                      <li><strong>{{ message }}</strong></li>
+                    {% endfor %}
+                    </ul>
+                  {% endif %}
+                {% endwith %}
+            </div>
+
+            <div>
+                <label for="calories">Calories</label>
+                <input type="number" id="calories" name="calories" placeholder="e.g., 104" value="{{ calories }}">
+            </div>
+
+            <div>
+                <label for="unit">Unit</label>
+                <input type="text" id="unit" name="unit" placeholder="e.g., Piece" value="{{ unit }}">
+            </div>
+            <input type="hidden" id="form-submitted" name="form-submitted" value="0">  <!-- Hidden field -->
+            <button type="submit" onclick="document.getElementById('form-submitted').value = '1'">
+              Add Food To Database
+           </button>
+        </form>
+    </div>
+
+    <br>
+    <!-- Flash Message Area at the Bottom (for Errors) -->
+<div id="error-messages">
+    {% with messages = get_flashed_messages(category_filter=["error_bottom"]) %}
+      {% if messages %}
+        <ul class="error-flashes">
+        {% for message in messages %}
+          <li class="error"><strong>{{ message }}</strong></li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</div>
+
+<script>
+    function fetchSuggestions(query) {
+        console.log("fetchSuggestions called with:", query); // Debugging
+
+        if (query.length > 0) {
+            fetch(`/food/fb_home?q=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Received Data:", data); // Debugging
+
+                    let dataList = document.getElementById("food-suggestions");
+                    dataList.innerHTML = ""; // Clear previous suggestions
+
+                    data.forEach(item => {
+                        let option = document.createElement("option");
+                        option.value = item;
+                        dataList.appendChild(option);
+                    });
+
+                    console.log("Suggestions Updated:", dataList.innerHTML); // Debugging
+                })
+                .catch(err => console.error("Error fetching food items:", err));
+        }
+    }
+
+    document.getElementById('check-food').addEventListener('click', function() {
+    fetch('/call_procedure', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+});
+</script>
+</body>
+</html>

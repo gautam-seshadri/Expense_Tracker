@@ -5,7 +5,6 @@ from datetime import timedelta
 2. Recurring expenses -Done
 3. Monthly exepnses limit and whether reached, reaching it or in track. - Done
 4. Expense insights
-
 '''
 
 def create_app():
@@ -17,6 +16,8 @@ def create_app():
 
     # Register blueprints
     from .routes import main
+    from .routes_fb import main as fb_main
     app.register_blueprint(main)
+    app.register_blueprint(fb_main, url_prefix='/food')
 
     return app

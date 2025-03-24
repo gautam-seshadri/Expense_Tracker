@@ -608,19 +608,6 @@ def edit_category():
 
 
 
-#
-# @main.route('/insights', methods=['GET'])
-# def insights():
-#     try:
-#         data = {
-#             category:
-#         }
-#     except Exception as e:
-#         print(str(e))
-
-
-
-
 
 
 
