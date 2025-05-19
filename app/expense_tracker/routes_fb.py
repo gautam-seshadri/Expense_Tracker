@@ -7,7 +7,6 @@ from collections import defaultdict
 
 main = Blueprint('fb_main', __name__)
 
-
 @main.route('/fb_home', methods=['GET', 'POST'])
 def fb_home():
     conn = get_db_connection()
@@ -16,8 +15,9 @@ def fb_home():
     meal_type = request.form.get('meal-type')
     print('gautam meal type', meal_type)
     form_submit = request.form.get('form-submitted')
+    get_details = request.form.get('get_details') # Check if it's a request for food details
     food_items = []
-    print("initial", form_submit)
+    print("initial form_submit:", form_submit)
     if not form_submit:
         form_submit = '0'
 
@@ -30,79 +30,70 @@ def fb_home():
         """, {'query': f"%{query}%"})
         suggestions = [row[0] for row in cursor.fetchall()]
         conn.close()
-        print('@@@1')
+        print('@@@1 suggestions:', suggestions)
         return jsonify(suggestions)
     print('@@@2')
     # Handle normal form submission
     suggestions = []
-    food_name = calories = unit = ""
-    quantity = 1
+    food_name = request.form.get('food-name', '')
+    calories = request.form.get('calories', '')
+    unit = request.form.get('unit', '')
+    quantity = float(request.form.get('quantity', 1)) if request.form.get('quantity') else 1
 
-    if request.method == 'POST':
+    # Handle request for food details
+    if request.method == 'POST' and get_details == '1' and food_name:
+        cursor.execute("""
+            SELECT CALORIES, UNIT FROM FOOD_ITEMS
+            WHERE FOOD = :food
+        """, {'food': food_name})
+        row = cursor.fetchone()
+        conn.close()
+        if row:
+            return jsonify({'calories': row[0], 'unit': row[1]})
+        return jsonify({})
 
-        selected_food = request.form.get('food-name')
-        quantity = float(request.form.get('quantity', 1))
+    if request.method == 'POST' and form_submit == '1' and meal_type and food_name and calories and unit:
+        print("coming hereeeeeee, form_submit:", form_submit, "meal_type:", meal_type)
+        cursor.execute("""
+            INSERT INTO USER_FOOD_LOG (MEAL_TYPE, FOOD, CALORIES, QUANTITY, UNIT, LOGGED_AT)
+            VALUES (:meal_type, :food, :calories, :quantity, :unit, SYSDATE+(5.5/24))
+        """, {
+            'meal_type': meal_type,
+            'food': food_name,
+            'calories': calories,
+            'quantity': quantity,
+            'unit': unit
+        })
+        conn.commit()
+        conn.close()
+        return redirect(url_for('fb_main.fb_home'))
 
-        if selected_food:
-            cursor.execute("""
-                SELECT CALORIES, UNIT FROM FOOD_ITEMS
-                WHERE FOOD = :food
-            """, {'food': selected_food})
-            row = cursor.fetchone()
-            if row:
-                calories, unit = row
-                calories = int(calories) * quantity
-                food_name = selected_food
-
-                # Insert only when Add Food button is clicked
-                if form_submit == '1':
-                    print("coming hereeeeeee", form_submit)
-
-                    cursor.execute("""
-                                        INSERT INTO USER_FOOD_LOG (MEAL_TYPE, FOOD, CALORIES, QUANTITY, UNIT, LOGGED_AT)
-                                        VALUES (:meal_type, :food, :calories, :quantity, :unit, SYSDATE+(5.5/24))
-                                    """, {
-                        'meal_type': meal_type,
-                        'food': food_name,
-                        'calories': calories,
-                        'quantity': quantity,
-                        'unit': unit
-                    })
-                    conn.commit()
-                    return redirect(url_for('fb_main.fb_home'))
-
-    # Fetch all food entries to display in the table
+    # Fetch all food entries to display in the table (GET request)
     print("get 1")
     cursor.execute("""
-            SELECT ID,
-                MEAL_TYPE,
-                FOOD,
-                CALORIES,
-                QUANTITY,
-                UNIT,
-                SUM(CALORIES) OVER (PARTITION BY MEAL_TYPE) AS  SUM_MEAL_TYPE,
-                SUM(CALORIES) OVER () AS SUM_CALORIES
-            FROM
-                USER_FOOD_LOG
-            WHERE
-                    LOGGED_AT >= TRUNC(SYSDATE)
-                AND LOGGED_AT <= SYSDATE+(5.5/24)
-            ORDER BY
-                CASE
-                    WHEN MEAL_TYPE = 'Breakfast'     THEN
-                        1
-                    WHEN MEAL_TYPE = 'Morning Snack' THEN
-                        2
-                    WHEN MEAL_TYPE = 'Lunch'         THEN
-                        3
-                    WHEN MEAL_TYPE = 'Evening Snack' THEN
-                        4
-                    WHEN MEAL_TYPE = 'Dinner'        THEN
-                        5
-                    ELSE
-                        6
-                END,
-                LOGGED_AT ASC
+        SELECT ID,
+            MEAL_TYPE,
+            FOOD,
+            CALORIES,
+            QUANTITY,
+            UNIT,
+            SUM(CALORIES) OVER (PARTITION BY MEAL_TYPE) AS  SUM_MEAL_TYPE,
+            SUM(CALORIES) OVER () AS SUM_CALORIES
+        FROM
+            USER_FOOD_LOG
+        WHERE
+                LOGGED_AT >= TRUNC(SYSDATE)
+            AND LOGGED_AT <= SYSDATE+(5.5/24)
+        ORDER BY
+            CASE
+                WHEN MEAL_TYPE = 'Breakfast'     THEN 1
+                WHEN MEAL_TYPE = 'Morning Snack' THEN 2
+                WHEN MEAL_TYPE = 'Lunch'         THEN 3
+                WHEN MEAL_TYPE = 'Evening Snack' THEN 4
+                WHEN MEAL_TYPE = 'Dinner'        THEN 5
+                ELSE 6
+            END,
+            LOGGED_AT ASC
     """)
     food_items = [
         {
@@ -142,8 +133,11 @@ def fb_home():
                            form_submit=form_submit,
                            grouped_items=grouped_items,
                            meal_totals=meal_totals,
-                           total_calories=total_calories
-                           )
+                           total_calories=total_calories)
+
+
+
+
 
 
 @main.route('/fb_add_food', methods=['GET', 'POST'])

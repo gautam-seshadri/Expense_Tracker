@@ -10,7 +10,6 @@
 <h1>Food Item Calorie Tracker</h1>
 
 <div class="container">
-    <!-- Left Section for Quick Links -->
     <div class="left-section">
         <a href="{{ url_for('main.index') }}">Main Home</a>
         <a href="{{ url_for('fb_main.fb_home') }}">Fitness Home</a>
@@ -18,8 +17,6 @@
         <a href="#">View Stats</a>
         <a href="#">Logout</a>
     </div>
-
-    <!-- Form to Add Food Items -->
 
     <form id="food-form" method="POST" class="form-section">
         <div>
@@ -37,8 +34,7 @@
             <label for="food-name">Food</label>
             <input type="text" id="food-name" name="food-name"
                    placeholder="e.g., Dosa" list="food-suggestions" required value="{{ food_name }}"
-                   onchange="this.form.submit()" oninput="fetchSuggestions(this.value)">
-
+                   oninput="fetchSuggestions(this.value)" onchange="populateFoodDetails(this.value)">
             <datalist id="food-suggestions">
                 {% for food in suggestions %}
                 <option value="{{ food }}">
@@ -48,28 +44,25 @@
 
         <div>
             <label for="calories">Calories</label>
-            <input type="number" id="calories" name="calories" placeholder="e.g., 104" required value="{{ calories }}">
+            <input type="number" id="calories" name="calories" placeholder="e.g., 104" required value="{{ calories }}" readonly>
         </div>
 
         <div>
             <label for="quantity">Quantity</label>
             <input type="number" id="quantity" name="quantity" placeholder="e.g., 1,2,.." required
-                   value="{{ quantity if quantity else 1 }}" onchange="this.form.submit()">
+                   value="{{ quantity if quantity else 1 }}">
         </div>
 
         <div>
             <label for="unit">Unit</label>
-            <input type="text" id="unit" name="unit" placeholder="e.g., Piece" required value="{{ unit }}">
+            <input type="text" id="unit" name="unit" placeholder="e.g., Piece" required value="{{ unit }}" readonly>
         </div>
-        <input type="hidden" id="form-submitted" name="form-submitted" value="0">  <!-- Hidden field -->
-        <button type="submit" onclick="document.getElementById('form-submitted').value = '1'">
+        <input type="hidden" id="form-submitted" name="form-submitted" value="0">  <button type="submit" onclick="document.getElementById('form-submitted').value = '1'">
             Add Food
         </button>
     </form>
 </div>
 
-<!-- Display Food Items -->
-<!-- Table to Display Food Items -->
 <div class="table-actions-row">
     <div class="container" style="display: flex; justify-content: right;">
         <table border="1">
@@ -123,7 +116,6 @@
                 <td>{{ item.unit }}</td>
 
                 <td class="action-items-btn">
-                    <!-- Modify Form -->
                     <form method="POST" action="{{ url_for('fb_main.modify_food', food_id=item.id) }}"
                           onsubmit="return copyValues({{ item.id }})">
                         <input type="hidden" name="meal_type" id="meal_type_hidden_{{ item.id }}">
@@ -131,7 +123,6 @@
                         <button type="submit" class="small-button-m">Modify</button>
                     </form>
 
-                    <!-- Delete Form -->
                     <form method="POST" action="{{ url_for('fb_main.delete_food', food_id=item.id) }}">
                         <button type="submit" class="btn btn-danger btn-sm"
                                 onclick="return confirm('Delete this item?');">Delete
@@ -139,11 +130,8 @@
                     </form>
                 </td>
             </tr>
-<!--            {% set meal_total = meal_total + item.calories %}-->
-<!--            {% set grand_total = grand_total + item.calories %}-->
             {% endfor %}
 
-            <!-- Subtotal for meal type -->
             <tr style="font-weight: bold; background-color: #f0f0f0;">
                 <td colspan="3" class="sub-total" style="text-align: right;">Subtotal for {{ meal_type }}</td>
                 <td>{{ meal_totals[meal_type] }}</td>
@@ -151,7 +139,6 @@
             </tr>
             {% endfor %}
 
-            <!-- Grand Total -->
             <tr style="font-weight: bold; background-color: #e0e0e0;">
                 <td colspan="3" class="grand-total" style="text-align: right;">Grand Total</td>
                 <td>{{ total_calories }}</td>
@@ -162,11 +149,7 @@
         </table>
 
 
-        <!-- Add this form before your table -->
-        <!-- Below the table -->
-
-
-    </div>
+        </div>
 </div>
 <br>
 <br>
@@ -209,25 +192,51 @@
         }
     }
 
-function enableEdit(id) {
-    // Get checkbox
-    let selCheckbox = document.getElementById('chk-' + id);
-
-    // Get form elements
-    let mealDropdown = document.getElementById('meal-' + id);
-    let qtyInput = document.getElementById('qty-' + id);
-
-    // Set disabled property based on checkbox state
-    if (selCheckbox.checked) {
-        // If checked, enable the fields
-        mealDropdown.disabled = false;
-        qtyInput.disabled = false;
-    } else {
-        // If unchecked, disable the fields
-        mealDropdown.disabled = true;
-        qtyInput.disabled = true;
+    function populateFoodDetails(foodName) {
+        if (foodName) {
+            fetch('/food/fb_home', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `get_details=1&food-name=${foodName}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.calories && data.unit) {
+                    document.getElementById('calories').value = data.calories;
+                    document.getElementById('unit').value = data.unit;
+                } else {
+                    document.getElementById('calories').value = '';
+                    document.getElementById('unit').value = '';
+                }
+            })
+            .catch(error => console.error('Error fetching food details:', error));
+        } else {
+            document.getElementById('calories').value = '';
+            document.getElementById('unit').value = '';
+        }
     }
-}
+
+    function enableEdit(id) {
+        // Get checkbox
+        let selCheckbox = document.getElementById('chk-' + id);
+
+        // Get form elements
+        let mealDropdown = document.getElementById('meal-' + id);
+        let qtyInput = document.getElementById('qty-' + id);
+
+        // Set disabled property based on checkbox state
+        if (selCheckbox.checked) {
+            // If checked, enable the fields
+            mealDropdown.disabled = false;
+            qtyInput.disabled = false;
+        } else {
+            // If unchecked, disable the fields
+            mealDropdown.disabled = true;
+            qtyInput.disabled = true;
+        }
+    }
 
 
     function copyValues(itemId) {
@@ -240,7 +249,5 @@ function enableEdit(id) {
         return true;
     }
 </script>
-
-
 </body>
 </html>
