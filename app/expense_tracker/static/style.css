@@ -129,6 +129,7 @@ input[type="submit"]:hover {
     background-color: #45a049;
 }
 
+
 /* Responsive Design - Mobile View */
 @media (max-width: 600px) {
     .container {

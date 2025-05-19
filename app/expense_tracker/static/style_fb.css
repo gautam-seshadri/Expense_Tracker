@@ -1,0 +1,304 @@
+/* General styling */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f6f7fb;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+/* Sidebar links */
+.sidebar a {
+  color: #2e8b57;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sidebar a:hover {
+  text-decoration: underline;
+}
+
+/* Form and table containers */
+form, .table-container {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  max-width: 100%;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+thead {
+  background-color: #4caf50;
+}
+
+table th {
+  padding: 10px 12px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  color: white;
+}
+
+table td {
+  padding: 10px 12px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  color: #333;
+  background-color: #fff;
+}
+
+/* Inputs and selects inside table */
+table select,
+table input {
+  height: 30px;
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fix for the action buttons layout */
+.actions {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Actions cell styling */
+td.actions {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  justify-content: center;
+}
+
+/* Fix for the buttons layout */
+.action-buttons-container {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+/* Style for action buttons */
+.btn,
+.btn-success,
+button.modify,
+button.delete-selected {
+  display: inline-block;
+  margin: 0 3px;
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1.2;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: auto;
+}
+
+/* Modify button styling */
+.btn-success,
+button.modify {
+  background-color: blue;
+  color: white;
+}
+
+/* Delete button styling */
+button.delete-selected {
+  background-color: #4caf50;
+  color: white;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* Add Food button */
+button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+/* Form fields */
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Important fix: ensure buttons are displayed inline in Action column */
+td.action-items-btn {
+  white-space: nowrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;  /* Adjust gap between buttons */
+}
+
+/* Override any previous button stacking */
+.action-items-btn button {
+  border: none;
+  box-shadow: none;
+  background-color: #4caf50; /* or your color */
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+
+
+.action-items-btn form {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  display: inline;
+  height: 100%;
+  width: 100%;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0 5%;
+    box-sizing: border-box;
+    margin-top: 20px;
+    flex-direction: row;
+    gap: 5%; /* Add this for spacing between left and right sections */
+}
+
+
+/* Left Section - Links */
+.left-section {
+    width: 10%; /* Links section takes 25% of the total width */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 5px;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 40px;
+    margin-left: 0%;
+    margin-right: 2%; /* Space between links and the form */
+    height: fit-content;
+}
+
+/* Links styling */
+.left-section a {
+    color: #4CAF50;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.left-section a:hover {
+    color: #45a049;
+    text-decoration: underline;
+}
+
+    /* Links section now takes full width */
+    .left-section {
+        width: 20%; /* Full width for links */
+        margin-bottom: 20px; /* Space between links and form */
+    }
+
+/* Responsive Design - Mobile View */
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column; /* Stack the form and links vertically */
+        align-items: center; /* Center everything */
+        padding: 0 10%; /* Reduce padding on smaller screens */
+    }
+
+    /* Links section now takes full width */
+    .left-section {
+        width: 20%; /* Full width for links */
+        margin-bottom: 20px; /* Space between links and form */
+    }
+
+    /* Form takes 90% of the container width for better fit */
+    form {
+        width: 90%; /* Form width adjustment */
+        padding: 20px;
+    }
+
+    /* Heading font size for mobile */
+    h1 {
+        font-size: 1.5rem;
+        padding-top: 20px;
+    }
+}
+
+
+.form-section {
+    width: 100%; /* You can change to 70% if needed */
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+}
+.total-row {
+    font-weight: bold;
+    background-color: #eef;
+}
+input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+}
+
+.grand-total {
+    color: rgb(255, 99, 71);  /* Tomato */
+}
+
+.sub-total {
+    color: #007bff;
+}
+
+.small-button-m {
+  padding: 2px 4px; /* Adjust padding for a smaller button */
+  font-size: 10px; /* Adjust font-size for a smaller button */
+  background-color: blue; /* Or your preferred color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+}

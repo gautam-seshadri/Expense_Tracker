@@ -1,6 +1,6 @@
 import oracledb
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash
-from Expense_Tracker.app.expense_tracker.connection import get_db_connection
+from .connection import get_db_connection
 import re
 from todoist_api_python.api import TodoistAPI
 from datetime import datetime

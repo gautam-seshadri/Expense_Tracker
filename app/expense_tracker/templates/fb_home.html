@@ -4,72 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Item Calorie Tracker</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_fb.css') }}">
 </head>
 <body>
-    <h1>Food Item Calorie Tracker</h1>
+<h1>Food Item Calorie Tracker</h1>
 
-    <div class="container">
-        <!-- Left Section for Quick Links -->
-        <div class="left-section">
-            <a href="#">Home</a>
-            <a href="{{ url_for('fb_main.fb_add_food') }}">Add Food</a>
-            <a href="#">View Stats</a>
-            <a href="#">Logout</a>
-        </div>
-
-        <!-- Form to Add Food Items -->
-        <form id="food-form" method="POST">
-            <div>
-                <label for="meal-type">Meal Type</label>
-                <select id="meal-type" name="meal-type" required>
-                    <option value="Breakfast">Breakfast</option>
-                    <option value="Morning Snack">Morning Snack</option>
-                    <option value="Lunch">Lunch</option>
-                    <option value="Evening Snack">Evening Snack</option>
-                    <option value="Dinner">Dinner</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="food-name">Food</label>
-                <input type="text" id="food-name" name="food-name"
-                       placeholder="e.g., Dosa" list="food-suggestions" required value="{{ food_name }}" onchange="this.form.submit()" oninput="fetchSuggestions(this.value)">
-
-                <datalist id="food-suggestions">
-                    {% for food in suggestions %}
-                        <option value="{{ food }}">
-                    {% endfor %}
-                </datalist>
-            </div>
-
-            <div>
-                <label for="calories">Calories</label>
-                <input type="number" id="calories" name="calories" placeholder="e.g., 104" required value="{{ calories }}">
-            </div>
-
-            <div>
-                <label for="quantity">Quantity</label>
-                <input type="number" id="quantity" name="quantity" placeholder="e.g., 1,2,.." required value="{{ quantity if quantity else 1 }}" onchange="this.form.submit()" >
-            </div>
-
-            <div>
-                <label for="unit">Unit</label>
-                <input type="text" id="unit" name="unit" placeholder="e.g., Piece" required value="{{ unit }}">
-            </div>
-            <input type="hidden" id="form-submitted" name="form-submitted" value="0">  <!-- Hidden field -->
-            <button type="submit" onclick="document.getElementById('form-submitted').value = '1'">
-              Add Food
-           </button>
-        </form>
+<div class="container">
+    <!-- Left Section for Quick Links -->
+    <div class="left-section">
+        <a href="{{ url_for('main.index') }}">Main Home</a>
+        <a href="{{ url_for('fb_main.fb_home') }}">Fitness Home</a>
+        <a href="{{ url_for('fb_main.fb_add_food') }}">Add Food</a>
+        <a href="#">View Stats</a>
+        <a href="#">Logout</a>
     </div>
 
-    <!-- Display Food Items -->
-        <!-- Table to Display Food Items -->
-   <!-- Table to Display Food Items -->
-<div class="container" style="display: flex; justify-content: right;">
-    <table border="1">
-        <thead>
+    <!-- Form to Add Food Items -->
+
+    <form id="food-form" method="POST" class="form-section">
+        <div>
+            <label for="meal-type">Meal Type</label>
+            <select id="meal-type" name="meal-type" required>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Morning Snack">Morning Snack</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Evening Snack">Evening Snack</option>
+                <option value="Dinner">Dinner</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="food-name">Food</label>
+            <input type="text" id="food-name" name="food-name"
+                   placeholder="e.g., Dosa" list="food-suggestions" required value="{{ food_name }}"
+                   onchange="this.form.submit()" oninput="fetchSuggestions(this.value)">
+
+            <datalist id="food-suggestions">
+                {% for food in suggestions %}
+                <option value="{{ food }}">
+                    {% endfor %}
+            </datalist>
+        </div>
+
+        <div>
+            <label for="calories">Calories</label>
+            <input type="number" id="calories" name="calories" placeholder="e.g., 104" required value="{{ calories }}">
+        </div>
+
+        <div>
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" name="quantity" placeholder="e.g., 1,2,.." required
+                   value="{{ quantity if quantity else 1 }}" onchange="this.form.submit()">
+        </div>
+
+        <div>
+            <label for="unit">Unit</label>
+            <input type="text" id="unit" name="unit" placeholder="e.g., Piece" required value="{{ unit }}">
+        </div>
+        <input type="hidden" id="form-submitted" name="form-submitted" value="0">  <!-- Hidden field -->
+        <button type="submit" onclick="document.getElementById('form-submitted').value = '1'">
+            Add Food
+        </button>
+    </form>
+</div>
+
+<!-- Display Food Items -->
+<!-- Table to Display Food Items -->
+<div class="table-actions-row">
+    <div class="container" style="display: flex; justify-content: right;">
+        <table border="1">
+            <thead>
             <tr>
                 <th>Select</th>
                 <th>Meal Type</th>
@@ -79,64 +83,91 @@
                 <th>Unit</th>
                 <th>Actions</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
+            {% set grouped_items = {} %}
             {% for item in food_items %}
+            {% if item.meal_type not in grouped_items %}
+            {% set _ = grouped_items.update({item.meal_type: []}) %}
+            {% endif %}
+            {% set _ = grouped_items[item.meal_type].append(item) %}
+            {% endfor %}
+
+            {% set grand_total = 0 %}
+            {% for meal_type, items in grouped_items.items() %}
+            {% set meal_total = 0 %}
+            {% for item in items %}
             <tr>
-                <form method="POST" action="{{ url_for('fb_main.modify_food', food_id=item.id) }}" id="form-{{ item.id }}">
-                    <td><input type="checkbox" id="chk-{{ item.id }}" name="selected" value="{{ item.id }}" onclick="enableEdit({{ item.id }})"></td>
+                <td><input type="checkbox" id="chk-{{ item.id }}" name="selected" value="{{ item.id }}" class="chkbox1"
+                           onclick="enableEdit('{{ item.id }}')"></td>
 
-                    <!-- Meal Type dropdown -->
-                    <td>
-                        <select name="meal_type" id="meal-{{ item.id }}" disabled required>
-                            <option value="Breakfast" {% if item.meal_type == 'Breakfast' %} selected {% endif %}>Breakfast</option>
-                            <option value="Morning Snack" {% if item.meal_type == 'Morning Snack' %} selected {% endif %}>Morning Snack</option>
-                            <option value="Lunch" {% if item.meal_type == 'Lunch' %} selected {% endif %}>Lunch</option>
-                            <option value="Evening Snack" {% if item.meal_type == 'Evening Snack' %} selected {% endif %}>Evening Snack</option>
-                            <option value="Dinner" {% if item.meal_type == 'Dinner' %} selected {% endif %}>Dinner</option>
-                        </select>
-                    </td>
+                <td>
+                    <select name="meal_type" id="meal-{{ item.id }}" disabled required>
+                        <option value="Breakfast" {% if item.meal_type==
+                        'Breakfast' %}selected{% endif %}>Breakfast</option>
+                        <option value="Morning Snack" {% if item.meal_type==
+                        'Morning Snack' %}selected{% endif %}>Morning Snack</option>
+                        <option value="Lunch" {% if item.meal_type==
+                        'Lunch' %}selected{% endif %}>Lunch</option>
+                        <option value="Evening Snack" {% if item.meal_type==
+                        'Evening Snack' %}selected{% endif %}>Evening Snack</option>
+                        <option value="Dinner" {% if item.meal_type==
+                        'Dinner' %}selected{% endif %}>Dinner</option>
+                    </select>
+                </td>
 
-                    <!-- Food Name -->
-                    <td>{{ item.food_name }}</td>
+                <td>{{ item.food_name }}</td>
+                <td>{{ item.calories }}</td>
+                <td><input type="number" id="qty-{{ item.id }}" name="quantity" value="{{ item.quantity }}"
+                           style="width:70px;" disabled required></td>
+                <td>{{ item.unit }}</td>
 
-                    <!-- Calories -->
-                    <td>{{ item.calories }}</td>
+                <td class="action-items-btn">
+                    <!-- Modify Form -->
+                    <form method="POST" action="{{ url_for('fb_main.modify_food', food_id=item.id) }}"
+                          onsubmit="return copyValues({{ item.id }})">
+                        <input type="hidden" name="meal_type" id="meal_type_hidden_{{ item.id }}">
+                        <input type="hidden" name="quantity" id="quantity_hidden_{{ item.id }}">
+                        <button type="submit" class="small-button-m">Modify</button>
+                    </form>
 
-                    <!-- Quantity textbox -->
-                    <td><input type="number" id="qty-{{ item.id }}" name="quantity" value="{{ item.quantity }}" style="width:50px;" disabled required></td>
+                    <!-- Delete Form -->
+                    <form method="POST" action="{{ url_for('fb_main.delete_food', food_id=item.id) }}">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Delete this item?');">Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+<!--            {% set meal_total = meal_total + item.calories %}-->
+<!--            {% set grand_total = grand_total + item.calories %}-->
+            {% endfor %}
 
-                    <!-- Unit -->
-                    <td>{{ item.unit }}</td>
-
-                    <!-- Modify Button -->
-                    <td>
-                        <button type="submit" form="form-{{ item.id }}" class="btn btn-success">Modify</button>
-                        <form method="POST" action="{{ url_for('fb_main.delete_food', food_id=item.id) }}" style="display:inline;" onsubmit="return confirm('Delete this item?');">
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                    </td>
-                </form>
+            <!-- Subtotal for meal type -->
+            <tr style="font-weight: bold; background-color: #f0f0f0;">
+                <td colspan="3" class="sub-total" style="text-align: right;">Subtotal for {{ meal_type }}</td>
+                <td>{{ meal_totals[meal_type] }}</td>
+                <td colspan="3"></td>
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
 
-    <!-- Add this form before your table -->
-<form method="POST" action="{{ url_for('fb_main.bulk_delete_food') }}" id="bulk-delete-form">
-    <button type="submit" class="btn btn-danger" onclick="return confirm('Delete all selected items?');">
-        Delete Selected Items
-    </button>
+            <!-- Grand Total -->
+            <tr style="font-weight: bold; background-color: #e0e0e0;">
+                <td colspan="3" class="grand-total" style="text-align: right;">Grand Total</td>
+                <td>{{ total_calories }}</td>
+                <td colspan="3"></td>
+            </tr>
+            </tbody>
 
-    <!-- This is where we'll store the selected IDs -->
-    <input type="hidden" name="selected_ids" id="selected-ids-input" value="">
-</form>
+        </table>
 
+
+        <!-- Add this form before your table -->
+        <!-- Below the table -->
+
+
+    </div>
 </div>
-<br>
-<br>
-<br>
-<br>
 <br>
 <br>
 <br>
@@ -147,6 +178,11 @@
 <div style="text-align: center; margin-top: 20px; font-size: 14px;">
     © 2025 Gautam Fitness Tracker™. All rights reserved.
 </div>
+
+<br>
+<br>
+<br>
+<br>
 
 <script>
     function fetchSuggestions(query) {
@@ -192,6 +228,17 @@ function enableEdit(id) {
         qtyInput.disabled = true;
     }
 }
+
+
+    function copyValues(itemId) {
+        console.log("Running copyValues for item:", itemId); // Add this
+        const mealType = document.getElementById('meal-' + itemId).value;
+        const quantity = document.getElementById('qty-' + itemId).value;
+
+        document.getElementById('meal_type_hidden_' + itemId).value = mealType;
+        document.getElementById('quantity_hidden_' + itemId).value = quantity;
+        return true;
+    }
 </script>
 
 
